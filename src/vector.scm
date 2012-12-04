@@ -5,6 +5,15 @@
          (extended-bindings)
          (block))
 
+;;; Swap elements in a vector destructively
+;;; (define ve '#(0 1 2 3 4 5))
+;;; (list-swap! ve 2 4)
+;;; ve -> '#(0 1 4 3 2 5)
+(define (vector-swap! v i j)
+  (let ((a (vector-ref v i)) (b (vector-ref v j)))
+    (vector-set! v i b)
+    (vector-set! v j a)))
+
 ;;; for-each for vectors
 ;;; TODO: optimize
 (define (vector-for-each proc vec . vecs)

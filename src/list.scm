@@ -56,6 +56,17 @@
 (define (rotate-right k lis)
   (error "Not implemented"))
 
+;;; Swap elements in a list destructively
+;;; (define li '(0 1 2 3 4 5))
+;;; (list-swap! li 2 4)
+;;; li -> '(0 1 4 3 2 5)
+(define (list-swap! v i j)
+  (let* ((x (list-tail v i))
+         (y (list-tail v j))
+         (a (car x))
+         (b (car y)))
+    (set-car! x b)
+    (set-car! y a)))
 
 ;-------------------------------------------------------------------------------
 ; Map/fold variants

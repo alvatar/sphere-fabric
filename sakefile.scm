@@ -1,7 +1,8 @@
 (define modules '(conversion
-                  list
+                  list-extra
                   random
-                  vector))
+                  vector
+                  srfi-1-list))
 
 (define-task compile ()
   (for-each (lambda (m)

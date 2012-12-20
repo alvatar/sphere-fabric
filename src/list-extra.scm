@@ -1,27 +1,26 @@
 ;;; Copyright (c) 2012, Alvaro Castro-Castilla. All rights reserved.
-;;; List algorithms
+;;; More list algorithms
 
 (declare (standard-bindings)
          (extended-bindings)
-         (block)
-         (mostly-generic))
+         (fixnum))
 
 ;-------------------------------------------------------------------------------
 ; Basic
 ;-------------------------------------------------------------------------------
 
-;;; atom?
+;;! atom?
 (define atom? (lambda (x) (and (not (pair? x)) (not (null? x)))))
 
-;;; XOR
+;;! xor
 (define (xor a b) (if a (not b) b))
 
-;;; snoc (important: always prefer the use of cons)
+;;! snoc (important: always prefer the use of cons)
 (define snoc
   (lambda (ls x)
     (append ls (list x))))
 
-;;; All cars and all cdrs
+;;! all cars and all cdrs
 (define (cars+cdrs ls)
   (call/cc
    (lambda (abort)
@@ -35,31 +34,31 @@
                                                   (cons d cdrs))))))
            (values '() '()))))))
 
-;;; All cars
+;;! all cars
 (define (cars ls) (map car ls))
 
-;;; All cdrs
+;;! all cdrs
 (define (cdrs ls) (map cdr ls))
 
 
-;;; Pick an element starting from the end
+;;! pick an element starting from the end
 (define (list-ref-right k lis)
   (error "Not implemented"))
 
-;;; Rotate the list by taking the head and placing it at the tail
-;;; '(a b c d e) 1 -> '(b c d e a)
+;;! Rotate the list by taking the head and placing it at the tail
+;; '(a b c d e) 1 -> '(b c d e a)
 (define (rotate-left k lis)
   (error "Not implemented"))
 
-;;; Rotate the list by taking the last element and placing it at the head
-;;; '(a b c d e) 1 -> '(e a b c d)
+;;! Rotate the list by taking the last element and placing it at the head
+;; '(a b c d e) 1 -> '(e a b c d)
 (define (rotate-right k lis)
   (error "Not implemented"))
 
-;;; Swap elements in a list destructively
-;;; (define li '(0 1 2 3 4 5))
-;;; (list-swap! li 2 4)
-;;; li -> '(0 1 4 3 2 5)
+;;! Swap elements in a list destructively
+;; (define li '(0 1 2 3 4 5))
+;; (list-swap! li 2 4)
+;; li -> '(0 1 4 3 2 5)
 (define (list-swap! v i j)
   (let* ((x (list-tail v i))
          (y (list-tail v j))
@@ -72,7 +71,7 @@
 ; Map/fold variants
 ;-------------------------------------------------------------------------------
 
-;;; Recursive map
+;;! Recursive map
 (define (map* f l)
   (cond
    ((null? l) '())
@@ -80,7 +79,7 @@
    (else
     (cons (map* f (car l)) (map* f (cdr l))))))
 
-;;; Map applying the function only to the elements satisfying predicate
+;;! Map applying the function only to the elements satisfying predicate
 (define-syntax map-if
   (syntax-rules ()
     ((_ p f l)
@@ -88,8 +87,8 @@
     ((_ p ft ff l)
      (map (lambda (e) (if (p e) (ft e) (ff e))) l))))
 
-;;; Map and cond combined: maps applying a function to the elements that
-;;; satisfy each predicate. It can contain an else clause
+;;! Map and cond combined: maps applying a function to the elements that
+;; satisfy each predicate. It can contain an else clause
 (define-syntax map-cond
   (syntax-rules (else)
     ;; Implicit with selector
@@ -139,7 +138,7 @@
      (map (lambda (?vars ...) (cond ?conds ... (else #f))) ?l ...))
 
     ;; Implicit
-    ((_ ((?p ?f) ...) ?l . ?lt) ; entry for given vars case
+    ((_ ((?p ?f) ...) ?l . ?lt)         ; entry for given vars case
      (map-cond "impl" () ((?p ?f) ...) () (?l . ?lt)))
     ((_ "impl" (?vars ...) ((?p ?f) ...) (?l ...) (?lh . ?lls)) ; recur vars
      (map-cond "impl" (?vars ... x) ((?p ?f) ...) (?l ... ?lh) ?lls))
@@ -160,53 +159,53 @@
      (map (lambda ?vars (cond ?conds ... (else #f))) ?l ...))
 
     ;; Global wrong syntax cases
-    ((_ ((any ...) ...) thing ...) ; detect wrong syntax
+    ((_ ((any ...) ...) thing ...)      ; detect wrong syntax
      (error "Syntax error: wrong number of arguments in condition"))))
 
-;;; Map that generates a value for each element
-;;; (map/values (lambda (x y z) (values x y z)) '(a 1) '(b 2) '(c 3))
-;;; => (a b c)
-;;;    (1 2 3)
-;;;
-;;;     A          B          C
-;;;     +----+     +----+     +----+lists
-;;;  ---+----+-----+----+-----+----+--------> (f A0 B0 C0) ----> val1
-;;;     |0   |     |0   |     |0   |
-;;;     +----+     +----+     +----+
-;;;  ---+----+-----+----+-----+----+--------> (f A1 B1 C1) ----> val2
-;;;     |1   |     |1   |     |1   |
-;;;     +----+     +----+     +----+
-;;;  ---+----+-----+----+-----+----+--------> (f A2 B2 C2) ----> val3
-;;;     |2   |     |2   |     |2   |
-;;;     +----+     +----+     +----+
+;;! Map that generates a value for each element
+;; (map/values (lambda (x y z) (values x y z)) '(a 1) '(b 2) '(c 3))
+;; => (a b c)
+;;    (1 2 3)
+;;
+;;     A          B          C
+;;     +----+     +----+     +----+lists
+;;  ---+----+-----+----+-----+----+--------> (f A0 B0 C0) ----> val1
+;;     |0   |     |0   |     |0   |
+;;     +----+     +----+     +----+
+;;  ---+----+-----+----+-----+----+--------> (f A1 B1 C1) ----> val2
+;;     |1   |     |1   |     |1   |
+;;     +----+     +----+     +----+
+;;  ---+----+-----+----+-----+----+--------> (f A2 B2 C2) ----> val3
+;;     |2   |     |2   |     |2   |
+;;     +----+     +----+     +----+
 (define (map/values f . ls)
   (list->values
    (apply map (lambda args (values->list (apply f args))) ls)))
 
-;;; Fold that accumulates several values
-;;; (fold/values (lambda (x a b) (values (cons (+ 1 x) a) (cons x b))) '(() ()) '(1 2 3 4 5))
-;;; => (6 5 4 3 2)
-;;;    (5 4 3 2 1)
-;;; (fold/values (lambda (x a b) (values (cons (car x) a) (cons (cadr x) b))) '(() ()) '((a 1) (b 2) (c 3)))
-;;; => (c b a)
-;;;    (3 2 1)
-;;;                               +----+    +----+    +----+
-;;;                        +-------val1------val2------val3--
-;;;                        |      +----+    +----+    +----+
-;;;                        |        ^         ^         ^
-;;;  +---+  +---+lists     v        |         |         |
-;;; --A0-----B0---------> f* -------+---------+---------+
-;;;  +---+  +---+          |
-;;;  |A1 |  |B1 | ------> f*
-;;;  +---+  +---+          |      -----> val1
-;;;  |A2 |  |B2 |    --->       /
-;;;  +---+  +---+          |   /
-;;;  |A3 |  |B3 |          v  /
-;;;  +---+  +---+         f* ---- -----> val2
-;;;  |A4 |  |B4 |             \
-;;;  +---+  +---+              \
-;;;                             \
-;;;                               -----> val3
+;;! Fold that accumulates several values
+;; (fold/values (lambda (x a b) (values (cons (+ 1 x) a) (cons x b))) '(() ()) '(1 2 3 4 5))
+;; => (6 5 4 3 2)
+;;    (5 4 3 2 1)
+;; (fold/values (lambda (x a b) (values (cons (car x) a) (cons (cadr x) b))) '(() ()) '((a 1) (b 2) (c 3)))
+;; => (c b a)
+;;    (3 2 1)
+;;                               +----+    +----+    +----+
+;;                        +-------val1------val2------val3--
+;;                        |      +----+    +----+    +----+
+;;                        |        ^         ^         ^
+;;  +---+  +---+lists     v        |         |         |
+;; --A0-----B0---------> f* -------+---------+---------+
+;;  +---+  +---+          |
+;;  |A1 |  |B1 | ------> f*
+;;  +---+  +---+          |      -----> val1
+;;  |A2 |  |B2 |    --->       /
+;;  +---+  +---+          |   /
+;;  |A3 |  |B3 |          v  /
+;;  +---+  +---+         f* ---- -----> val2
+;;  |A4 |  |B4 |             \
+;;  +---+  +---+              \
+;;                             \
+;;                               -----> val3
 (define (fold/values kons knil . ls)
   (list->values
    (apply fold
@@ -216,23 +215,23 @@
           knil
           (reverse ls))))
 
-;;; Demultiplex a list
-;;; (demux (lambda (x) (values (car x) (cadr x))) '((a 1) (b 2) (c 3)))
-;;; => (a b c)
-;;;    (1 2 3)
-;;;                                       +---+---+---+---+---+list
-;;;                                       |0A |1A |2A |3A |4A |------> val1
-;;;  +---+   +---+list input      A---->  +---+---+---+---+---+
-;;; --0'------0"--------+        /
-;;;  +---+   +---+      |---> f*   [ (f n' n" ...) -> produces X values ]
-;;;  |1' |   |1" | - - -+        \
-;;;  +---+   +---+                B---->  +---+---+---+---+---+list
-;;;  |2' |   |2" | - - -          ...     |0B |1B |2B |3B |4B |------> val2
-;;;  +---+   +---+                X       +---+---+---+---+---+
-;;;  |3' |   |3" | - -
-;;;  +---+   +---+
-;;;  |4' |   |4" | -
-;;;  +---+   +---+
+;;! Demultiplex a list
+;; (demux (lambda (x) (values (car x) (cadr x))) '((a 1) (b 2) (c 3)))
+;; => (a b c)
+;;    (1 2 3)
+;;                                       +---+---+---+---+---+list
+;;                                       |0A |1A |2A |3A |4A |------> val1
+;;  +---+   +---+list input      A---->  +---+---+---+---+---+
+;; --0'------0"--------+        /
+;;  +---+   +---+      |---> f*   [ (f n' n" ...) -> produces X values ]
+;;  |1' |   |1" | - - -+        \
+;;  +---+   +---+                B---->  +---+---+---+---+---+list
+;;  |2' |   |2" | - - -          ...     |0B |1B |2B |3B |4B |------> val2
+;;  +---+   +---+                X       +---+---+---+---+---+
+;;  |3' |   |3" | - -
+;;  +---+   +---+
+;;  |4' |   |4" | -
+;;  +---+   +---+
 (define (demux f lis1 . lists)
   (if (pair? lists)
       (let ((all-ls (cons lis1 lists)))
@@ -249,7 +248,7 @@
                              (lambda produced-vals
                                (list->values
                                 (map (lambda (p t) (cons p t)) produced-vals tails))))))))))
-      (let recur ((l lis1)) ; faster
+      (let recur ((l lis1))             ; faster
         (if (null? l)
             (list->values (make-list (values-length (f (car lis1))) '()))
             (let ((h (car l)))
@@ -262,34 +261,34 @@
                       (list->values
                        (map (lambda (p t) (cons p t)) produced-vals tails)))))))))))
 
-;;; Apply a function to values, interleaving multiple sources
-;;; (apply/values (lambda (x y) (cons x y)) (values 'a 'b) (values 1 2))
-;;; => (a . 1)
-;;;    (b . 2)
-;;;
-;;;              g1 -------+
-;;;             /          |
-;;;            /           |
-;;;           /            |
-;;;          /             +--------> (f g1 h1) --> val1
-;;; g* -->  o--- g2 ----------+
-;;;          \             |  |
-;;;   |       \            |  |
-;;;   |        \           |  |
-;;;   |         \          |  |
-;;;   |          g3 ----+  |  |
-;;; values              |  |  +-----> (f g2 h2) --> val2
-;;;   |          h1 -------+  |
-;;;   |         /       |     |
-;;;   |        /        |     |
-;;;   |       /         |     |
-;;;          /          |     |
-;;; h* -->  o--- h2 ----------+
-;;;          \          +-----------> (f g3 h3) --> val3
-;;;           \         |
-;;;            \        |                            ...
-;;;             \       |
-;;;              h3 ----+
+;;! Apply a function to values, interleaving multiple sources
+;; (apply/values (lambda (x y) (cons x y)) (values 'a 'b) (values 1 2))
+;; => (a . 1)
+;;    (b . 2)
+;;
+;;              g1 -------+
+;;             /          |
+;;            /           |
+;;           /            |
+;;          /             +--------> (f g1 h1) --> val1
+;; g* -->  o--- g2 ----------+
+;;          \             |  |
+;;   |       \            |  |
+;;   |        \           |  |
+;;   |         \          |  |
+;;   |          g3 ----+  |  |
+;; values              |  |  +-----> (f g2 h2) --> val2
+;;   |          h1 -------+  |
+;;   |         /       |     |
+;;   |        /        |     |
+;;   |       /         |     |
+;;          /          |     |
+;; h* -->  o--- h2 ----------+
+;;          \          +-----------> (f g3 h3) --> val3
+;;           \         |
+;;            \        |                            ...
+;;             \       |
+;;              h3 ----+
 (define-syntax apply/values
   (syntax-rules ()
     ((_ "init-transformation" ?l . ?ls)
@@ -302,7 +301,7 @@
      (list->values
       (map (lambda (e) (apply ?f e)) (apply zip (apply/values "init-transformation" ?ls ...)))))))
 
-;;; pair-map applies map to the entire sublist, unlike map, which applies to the head
+;;! pair-map applies map to the entire sublist, unlike map, which applies to the head
 (define (pair-map f lis1 . lists)
   (if (pair? lists)
       (let recur ((lists (cons lis1 lists)))
@@ -315,10 +314,10 @@
 	(if (null? lis) lis
 	    (cons (f lis) (recur (cdr lis)))))))
 
-;;; map+fold combines them two, returning the map and the fold
-;;; (map+fold (lambda (a b) (values (+ a b) (+ b 1))) 0 '(1 2 3 4))
-;;; => (1 3 5 7)
-;;;    3
+;;! map+fold combines them two, returning the map and the fold
+;; (map+fold (lambda (a b) (values (+ a b) (+ b 1))) 0 '(1 2 3 4))
+;; => (1 3 5 7)
+;;    3
 (define (map+fold kons knil lis1 . lists)
   (if (pair? lists)
       (let recur ((lists (cons lis1 lists))
@@ -344,22 +343,10 @@
                                                fold-next))))
             (values '() fold-ans)))))
 
-;; TODO: WHY THIS DOESN'T WORK??
-(define (leave-come-back)
-  (let ((L (lambda (k)
-             (let recur ((n 0))
-               (if (= n 5)
-                   (begin (call/cc (lambda (back) (k n back)))
-                          '())
-                   (cons n (recur (+ n 1))))))))
-    (receive (a b)
-             (call/cc L)
-             (values a (b)))))
-
-;;; map-fold combines them two, maps values but also accumulates as fold, so that value can be
-;;; used inside the map-fold computation
-;;; (map-fold (lambda (a b) (values (+ a b) (+ b 1))) 0 '(1 2 3 4))
-;;; (1 3 5 7)
+;;! map-fold combines them two, maps values but also accumulates as fold, so that value can be
+;; used inside the map-fold computation
+;; (map-fold (lambda (a b) (values (+ a b) (+ b 1))) 0 '(1 2 3 4))
+;; (1 3 5 7)
 (define (map-fold kons knil lis1 . lists) ; OPTIMIZE: test if better than fold+map extraction
   (if (pair? lists)
       (let recur ((lists (cons lis1 lists))
@@ -370,7 +357,7 @@
                      (receive (mapv foldv)
                               (apply kons (snoc cars fold-ans))
                               (cons mapv (recur cdrs foldv))))))
-      (let recur ((l lis1) ; Fast path for
+      (let recur ((l lis1)              ; Fast path for
                   (fold-ans knil))
         (if (null? l)
             '()
@@ -379,7 +366,7 @@
                               (kons lh fold-ans)
                               (cons mapv (recur lt foldv))))))))
 
-;;; Like pair-fold, but stops folding when the cdr is of a given length
+;;! Like pair-fold, but stops folding when the cdr is of a given length
 (define (pair-fold-x x kons knil lists) ; TODO: implement without pair-fold
   (pair-fold
    (lambda args
@@ -394,7 +381,7 @@
    knil
    lists))
 
-;;; pair-fold-x specialization for x=2
+;;! pair-fold-x specialization for x=2
 (define pair-fold-2
   (curry pair-fold-x 2))
 
@@ -402,32 +389,38 @@
 ; Find, remove, substitute, insert
 ;-------------------------------------------------------------------------------
 
-;;; Insert given an index
+;;! Insert given an index
 (define (insert-at new k lis)
   (error "Not implemented"))
 
-;;; Insert at the left side of an element
+;;! Insert at the left side of an element
 (define (insert-left new e lis)
   (error "Not implemented"))
 
-;;; Insert at the left side of an element (recursively)
+;;! Insert at the left side of an element (recursively)
 (define (insert-left* new e lis)
   (error "Not implemented"))
 
-;;; Insert at the right side of an element
+;;! Insert at the right side of an element
 (define (insert-right new e lis)
   (error "Not implemented"))
 
-;;; Insert at the right side of an element (recursively)
+;;! Insert at the right side of an element (recursively)
 (define (insert-right* new e lis)
   (error "Not implemented"))
 
-;;; Remove given an index
+;;! Insert after each element
+(define (intersperse lis sep)
+  (cond
+   ((null? lis) '())
+   ((null? (cdr lis)) lis)
+   (else (cons (car lis) (cons sep (intersperse (cdr lis) sep))))))
 
+;;! Remove given an index
 (define (remove-at k lis)
   (error "Not implemented"))
 
-;;; Remove first instance
+;;! Remove first instance
 (define (remove-first pred l)
   ((letrec ((R (lambda (l)
                  (cond
@@ -436,21 +429,22 @@
                   (else (cons (car l)
                               (R (cdr l)))))))) R) l))
 
-;;; Remove if the predicate is satisfied with any element given in a list
+;;! Remove if the predicate is satisfied with any element given in a list
 (define (remove-any any-pred any-lis lis)
   (remove (lambda (e)
             (any (lambda (a) (any-pred a e)) any-lis))
           lis))
 
-;;; Remove if the predicate is satisfied with every element given in a list
+;;! Remove if the predicate is satisfied with every element given in a list
 (define (remove-every every-pred every-lis lis)
   (remove (lambda (x)
             (every (lambda (e) (every-pred e x)) every-lis))
           lis))
 
-;;; Try to find an element and remove it, yields #f if not found
+;;! Try to find an element and remove it, yields #f if not found
 (define (find-remove pred lis)
-  (let/cc failed
+  (let/cc
+   failed
    ((letrec ((R (lambda (l)
                   (if (null? l)
                       (failed #f)
@@ -459,10 +453,11 @@
                                    t
                                    (cons h (R t)))))))) R) lis)))
 
-;;; Try to find an element, yielding #f if not found. It returns both the element
-;;; and the list with that element removed
+;;! Try to find an element, yielding #f if not found. It returns both the element
+;; and the list with that element removed
 (define (find+remove pred lis)
-  (let/cc failed
+  (let/cc
+   failed
    ((letrec ((R (lambda (l)
                   (if (null? l)
                       (failed #f lis)
@@ -474,7 +469,7 @@
                                             (values newhead
                                                     (cons h newtail))))))))) R) lis)))
 
-;;; Rotates the list until the first one satisfies the predicate
+;;! Rotates the list until the first one satisfies the predicate
 (define (find-rotate pred lis)
   (define (iter lis-iter n)
     (let ((x (car lis-iter))
@@ -486,12 +481,16 @@
         (iter (append (cdr lis-iter) (list x)) (+ n 1))))))
   (iter lis 0))
 
-;;; Find the element that satisfies the predicate against all the other elements
+;;! Find the element that satisfies the predicate against all the other elements
 (define (most pred lis)
   (reduce (lambda (a b) (if (pred b a) b a)) #f lis))
 
-;;; Most, but return also the list with that element removed
-;;; TODO: Benchmark!!!!!
+;;! Most, but return also the list with that element removed
+;; TODO: Benchmark!!!!!
+;; (define (most+remove pred lis)
+;;   (let ((res (most pred lis)))
+;;     (values res
+;;             (remove-first res lis))))
 (define (most+remove pred lis)
   (let recur ((l lis)
               (list-common '())
@@ -510,12 +509,8 @@
                             list-common
                             (append! list-rembered (list h))
                             ans))))))
-;; (define (most+remove pred lis)
-;;   (let ((res (most pred lis)))
-;;     (values res
-;;             (remove-first res lis))))
 
-;;; MOST using a generator instead of a comparator predicate
+;;! MOST using a generator instead of a comparator predicate
 (define (most/generator generator comparator lis)
   (let iter ((ans (car lis))
              (current-max (generator (car lis)))
@@ -529,15 +524,18 @@
                        (iter h val t)
                        (iter ans current-max t)))))))
 
-;;; MAX/MIN standard functions with a comparable number generator. Similar to MOST,
-;;; but compares the numbers generated
+;; MAX/MIN standard functions with a comparable number generator. Similar to MOST,
+;; but compares the numbers generated
+
+;;! max/generator
 (define (max/generator generator lis)
   (most/generator generator > lis))
 
+;;! max/generator
 (define (min/generator generator lis)
   (most/generator generator < lis))
 
-;;; Substitution in a list (only first element)
+;;! Substitution in a list (only first element)
 (define (x-substitute maker pred? new l)
   ((letrec ((X (lambda (l)
                  (if (null? l)
@@ -547,12 +545,13 @@
                                   (maker new (X lcdr))
                                   (cons lcar (X lcdr)))))))) X) l))
 
+;;! substitute-first
 (define substitute-first (curry x-substitute cons))
 
-;;; Substitution in a list (all elements)
+;;! Substitution in a list (all elements)
 (define substitute (curry x-substitute append))
 
-;;; Recursive substitution in a list, down to atom-level
+;;! Recursive substitution in a list, down to atom-level
 (define (x-subst* maker old new l)
   ((letrec ((X (lambda (l)
                  (if (null? l)
@@ -575,24 +574,22 @@
                                  (X lcdr))))))))) X) l))
 (define substitute-first* (curry x-subst* cons))
 
-;;; Recursive substitution with multiple insertion, down to atom-level
+;;! Recursive substitution with multiple insertion, down to atom-level
 (define substitute* (curry x-subst* append))
 
 ;-------------------------------------------------------------------------------
 ; Skeleton/shape
 ;-------------------------------------------------------------------------------
 
-;;; Flatten a list (not-optimized)
-;;; TODO: benchmark
+;;! Flatten a list (optimized)
+;; http://schemecookbook.org/Cookbook/ListFlatten
+;; TODO: benchmark
 ;; (define (flatten x)
 ;;   (cond
 ;;    ((null? x) '())
 ;;    ((not (pair? x)) (list x))
 ;;    (else (append (flatten (car x))
 ;;                  (flatten (cdr x))))))
-
-;;; Flatten a list (optimized)
-;;; http://schemecookbook.org/Cookbook/ListFlatten
 (define (flatten x:xs)
   (let* ((result (cons '() '())) (last-elt result))
     (define (f x:xs)
@@ -608,7 +605,7 @@
     (f x:xs)
     (cdr result)))
 
-;;; Fast flatten, that doesn't respect ordering
+;;! Fast flatten, that doesn't respect ordering
 (define (flatten-unordered x:xs)
   (define (f x:xs result)
     (cond
@@ -620,7 +617,7 @@
       (f (cdr x:xs) (cons (car x:xs) result)))))
   (f x:xs '()))
 
-;;; Make a structure analysis of a list
+;;! Make a structure analysis of a list
 (define (list->skeleton l)
   ((letrec ((S (lambda (l n)
                  (cond
@@ -634,7 +631,7 @@
                    (S (cdr l) (+ 1 n)))))))
      S) l 0))
 
-;;; Expand a skeleton into a list with stub positions
+;;! Expand a skeleton into a list with stub positions
 ;; (define (expand-skeleton s) ; TODO Benchmark!
 ;;   ((letrec ((E (lambda (s)
 ;;                  (cond
@@ -656,8 +653,8 @@
                        (cons #t (E (cdr s)))
                        (cons #t (E (cons (- (car s) 1) (cdr s)))))))))) E) s))
 
-;;; Make a flat list fit into a skeleton
-;;; TODO: remove ticker, do with receive/values
+;;! Make a flat list fit into a skeleton
+;; TODO: remove ticker, do with receive/values
 (define (apply-skeleton s l)
   ((letrec ((next (ticker! l))
             (E (lambda (s)
@@ -675,7 +672,7 @@
 ; Sublist operations
 ;-------------------------------------------------------------------------------
 
-;;; Return a sublist from a start to an end positions
+;;! Return a sublist from a start to an end positions
 (define (slice l start end)
   (take (drop l start)
         (- end start)))
@@ -684,8 +681,9 @@
   (take! (drop l start)
          (- end start)))
 
-;;; Return two lists of lengths differing with at most one
-(define (split-in-halves l) ; TODO: currently reverses first list
+;;! Return two lists of lengths differing with at most one
+;; TODO: currently reverses first list
+(define (split-in-halves l)
   (let loop ((front '())
              (slow  l)
              (fast  l))
@@ -701,6 +699,7 @@
             (cdr slow)
             (cddr fast))))))
 
+;;! split-in-halves!
 (define (split-in-halves! l)
   (let loop ((slow (cons 'foo l))
              (fast (cons 'bar l)))
@@ -714,27 +713,27 @@
       (loop (cdr slow)
             (cddr fast))))))
 
-;;; partition a list depending on predicate satisfaction, effectively extending
-;;; the SRFI-1 |partition| procedure
-;;; (classify (lambda (x) (car x))
-;;;           ((lambda (x) (equal? x 'a)) (lambda (x) (equal? x 'b)))
-;;;           '((a) (b 0) (a 1) (b 1 2)))
-;;; => ((a) (a 1))
-;;;    ((b 0) (b 1 2))
-(define (classify) ; TODO
- ;; (fold/values (lambda (x a b c)
- ;;                (case 'first
- ;;                  ((first) (values (cons x a) b c))
- ;;                  ((second) (values a (cons x b) c))
- ;;                  ((splitted) (values a b (cons x c)))))
- ;;              '(() () ())
- ;;              (wall-windows wall))
- (error "Not implemented"))
+;;! partition a list depending on predicate satisfaction, effectively extending
+;; the SRFI-1 |partition| procedure
+;; (classify (lambda (x) (car x))
+;;           ((lambda (x) (equal? x 'a)) (lambda (x) (equal? x 'b)))
+;;           '((a) (b 0) (a 1) (b 1 2)))
+;; => ((a) (a 1))
+;;    ((b 0) (b 1 2))
+(define (classify)
+  ;; (fold/values (lambda (x a b c)
+  ;;                (case 'first
+  ;;                  ((first) (values (cons x a) b c))
+  ;;                  ((second) (values a (cons x b) c))
+  ;;                  ((splitted) (values a b (cons x c)))))
+  ;;              '(() () ())
+  ;;              (wall-windows wall))
+  (error "Not implemented"))
 
-;;; partition a list depending using a |case| form for testing
-;;; (case-classify (lambda (x) (car x)) (a b) '((a) (b 0) (a 1) (b 1 2)))
-;;; => ((a) (a 1))
-;;;    ((b 0) (b 1 2))
+;;! partition a list depending using a |case| form for testing
+;; (case-classify (lambda (x) (car x)) (a b) '((a) (b 0) (a 1) (b 1 2)))
+;; => ((a) (a 1))
+;;    ((b 0) (b 1 2))
 (define (case-classify key-generator)
   (error "Not implemented"))
 
@@ -742,24 +741,24 @@
 ; Grouping/ungrouping
 ;-------------------------------------------------------------------------------
 
-;;; '(a b c) 2 -> '(a a a b b b c c c)
-;;; Construct a new list containing each element repeated a number of times
+;;! Construct a new list containing each element repeated a number of times
+;; '(a b c) 2 -> '(a a a b b b c c c)
 (define (replicate n l)
   (error "Not implemented"))
 
-;;; Makes groups of equal elements
-;;; '(a a a a b b b b c c d d d) -> '((a a a a) (b b b b) (c c) (d d d))
+;;! Makes groups of equal elements
+;; '(a a a a b b b b c c d d d) -> '((a a a a) (b b b b) (c c) (d d d))
 (define (pack l)
   (error "Not implemented"))
 
-;;; Make n groups from a list. If not divisible, the last is smaller.
+;;! Make n groups from a list. If not divisible, the last is smaller.
 (define (n-groups n l)
   (error "Not implemented"))
   
-;;; Makes a number of groups with size n from a list. If not divisible, the last
-;;; is smaller. If a distribution is given as a list of integers, groups are made
-;;; with those numbers of elements per group. If not an exact distribution is
-;;; given, the last group is bigger or smaller than the distribution indicates
+;;! Makes a number of groups with size n from a list. If not divisible, the last
+;; is smaller. If a distribution is given as a list of integers, groups are made
+;; with those numbers of elements per group. If not an exact distribution is
+;; given, the last group is bigger or smaller than the distribution indicates
 (define (group n/s l)
   (error "Not implemented"))
 
@@ -767,12 +766,12 @@
 ; Miscellaneous
 ;-------------------------------------------------------------------------------
 
-;;; Creates a destructive function to read a list sequantially after each call
+;;! Creates a destructive function to read a list sequantially after each call
 (define (ticker! l)
   (lambda ()
     (begin0 (car l)
             (set! l (cdr l)))))
 
-;;; Check if the list is a palindrome (remains the same if reversed)
+;;! Check if the list is a palindrome (remains the same if reversed)
 (define (palindrome? l)
   (error "Not implemented"))

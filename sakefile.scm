@@ -2,7 +2,7 @@
                   list-extra
                   random
                   vector
-                  srfi-1-list))
+                  list))
 
 (define-task compile ()
   (for-each (lambda (m)

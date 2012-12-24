@@ -1,12 +1,28 @@
-(sphere: "algorithm")
+(sphere: "fabric")
 (dependencies:
- (list-extra
+ (algorithm/list-extra
   (include
-   (base: base-macros)
-   (base: values-macros))
+   (core: base-macros))
   (load
-   (base: functional)
-   (algorithm: srfi-1-list)))
- (random
+   (core: functional)
+   (= algorithm/list)))
+ (algorithm/stream
+  (include
+   (= structure/stream-macros))
   (load
-   (algorithm: srfi-1-list))))
+   (= structure/stream)))
+ (algorithm/stream-extra
+  (include
+   (= structure/stream-macros))
+  (load
+   (= structure/stream)
+   (= algorithm/stream)))
+ (algorithm/random
+  (load
+   (= algorithm/list)))
+ (structure/stream
+  (load
+   (= algorithm/list)))
+ (structure/multi-dimensional-array
+  (load
+   (= algorithm/list))))

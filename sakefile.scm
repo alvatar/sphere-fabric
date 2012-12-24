@@ -1,3 +1,6 @@
+;; (define modules
+;;   '(algorithm/vector))
+
 (define modules
   '(algorithm/conversion
     algorithm/comprehension

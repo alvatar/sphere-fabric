@@ -20,6 +20,9 @@
  (algorithm/random
   (load
    (= algorithm/list)))
+ (algorithm/vector
+  (include
+   (core: optionals-macros)))
  (structure/stream
   (load
    (= algorithm/list)))

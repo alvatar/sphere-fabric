@@ -19,7 +19,7 @@
 (define-syntax stream-lambda
   (syntax-rules ()
     ((stream-lambda formals body0 body1 ...)
-     (##lambda formals (stream-lazy (let () body0 body1 ...))))))
+     (lambda formals (stream-lazy (let () body0 body1 ...))))))
 
 ;;!! Streams derived
 
@@ -101,16 +101,17 @@
 (define-syntax stream-of
   (syntax-rules (is in)
     ((_ "aux" ?expr ?base)
-     (stream-cons ?expr ?base) )
+     (stream-cons ?expr ?base))
     ((_ "aux" ?expr ?base (?var in ?strm) ?rest ...)
      (stream-let loop ((strm ?strm))
-                 (if (stream-null? strm) ?base
+                 (if (stream-null? strm)
+                     ?base
                      (let ((?var (stream-car strm)))
-                       (stream-of "aux" ?expr (loop (stream-cdr strm)) ?rest ...)))) )
+                       (stream-of "aux" ?expr (loop (stream-cdr strm)) ?rest ...)))))
     ((_ "aux" ?expr ?base (?var is ?exp) ?rest ...)
-     (let ((?var ?exp)) (stream-of "aux" ?expr ?base ?rest ...)) )
+     (let ((?var ?exp)) (stream-of "aux" ?expr ?base ?rest ...)))
     ((_ "aux" ?expr ?base ?pred? ?rest ...)
-     (if ?pred? (stream-of "aux" ?expr ?base ?rest ...) ?base) )
+     (if ?pred? (stream-of "aux" ?expr ?base ?rest ...) ?base))
     ((_ ?expr ?rest ...)
-     (stream-of "aux" ?expr stream-null ?rest ...) ) ) )
+     (stream-of "aux" ?expr stream-null ?rest ...))))
 

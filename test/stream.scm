@@ -233,7 +233,6 @@
                         (odd? x)
                         (y is (* x x))))
             '(7 15 31))
-(test-skip 1)
 (test-equal "stream-of 2"
             (stream->list
              (stream-of (* x y)

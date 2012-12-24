@@ -22,12 +22,12 @@
        (stream-map (right-section stream-intersperse (stream-car xs))
                    (stream-permutations (stream-cdr xs))))))
 
-(define-stream (file->stream filename #!optional (reader read-char))
-  (let ((port (open-input-file filename)))
-    (stream-let loop ((obj (reader port)))
-                (if (eof-object? obj)
-                    (begin (close-input-port port) stream-null)
-                    (stream-cons obj (loop (reader port)))))))
+;; (define-stream (file->stream filename #!optional (reader read-char))
+;;   (let ((port (open-input-file filename)))
+;;     (stream-let loop ((obj (reader port)))
+;;                 (if (eof-object? obj)
+;;                     (begin (close-input-port port) stream-null)
+;;                     (stream-cons obj (loop (reader port)))))))
 
 (define (stream-split n strm)
   (values (stream-take n strm) (stream-drop n strm)))
@@ -50,22 +50,22 @@
                     (else
                      (loop (stream-cdr strm))))))
 
-;; (define-stream (stream-merge lt? . strms)
-;;   (define-stream (merge xx yy)
-;;     (stream-match xx
-;;       (() yy)
-;;       ((x . xs)
-;;         (stream-match yy
-;;           (() xx)
-;;           ((y . ys)
-;;             (if (lt? y x)
-;;                 (stream-cons y (merge xx ys))
-;;                 (stream-cons x (merge xs yy))))))))
-;;   (stream-let loop ((strms strms))
-;;     (cond ((null? strms)        stream-null)
-;;           ((null? (cdr strms))  (car strms))
-;;           (else
-;;             (merge (car strms) (apply stream-merge lt? (cdr strms)))))))
+(define-stream (stream-merge lt? . strms)
+  (define-stream (merge xx yy)
+    (stream-match xx
+      (() yy)
+      ((x . xs)
+        (stream-match yy
+          (() xx)
+          ((y . ys)
+            (if (lt? y x)
+                (stream-cons y (merge xx ys))
+                (stream-cons x (merge xs yy))))))))
+  (stream-let loop ((strms strms))
+    (cond ((null? strms)        stream-null)
+          ((null? (cdr strms))  (car strms))
+          (else
+            (merge (car strms) (apply stream-merge lt? (cdr strms)))))))
 
 (define (stream-partition pred? strm)
   (stream-unfolds

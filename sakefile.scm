@@ -1,5 +1,6 @@
-(define modules 
+(define modules
   '(algorithm/conversion
+    algorithm/comprehension
     algorithm/list
     algorithm/list-extra
     algorithm/random

@@ -1,6 +1,3 @@
-;; (define modules
-;;   '(structure/srfi-69-table))
-
 (define modules
   '(algorithm/compare
     algorithm/comprehension
@@ -8,6 +5,7 @@
     algorithm/list
     algorithm/list-extra
     algorithm/random
+    algorithm/sort-merge
     algorithm/stream
     algorithm/stream-extra
     algorithm/u8vector
@@ -16,6 +14,9 @@
     structure/multi-dimensional-array
     structure/srfi-69-table
     structure/stream))
+
+;; (define modules
+;;   '(algorithm/sort-merge))
 
 (define-task compile ()
   (for-each (lambda (m)

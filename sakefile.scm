@@ -1,8 +1,9 @@
 ;; (define modules
-;;   '(structure/array))
+;;   '(algorithm/compare))
 
 (define modules
-  '(algorithm/comprehension
+  '(algorithm/compare
+    algorithm/comprehension
     algorithm/conversion
     algorithm/list
     algorithm/list-extra

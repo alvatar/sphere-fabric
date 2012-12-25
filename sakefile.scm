@@ -1,16 +1,17 @@
 ;; (define modules
-;;   '(algorithm/vector))
+;;   '(structure/array))
 
 (define modules
-  '(algorithm/conversion
-    algorithm/comprehension
+  '(algorithm/comprehension
+    algorithm/conversion
     algorithm/list
     algorithm/list-extra
     algorithm/random
     algorithm/stream
     algorithm/stream-extra
+    algorithm/u8vector
     algorithm/vector
-    algorithm/stream-extra
+    structure/array
     structure/multi-dimensional-array
     structure/stream))
 

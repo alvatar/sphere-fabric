@@ -1,5 +1,5 @@
 ;; (define modules
-;;   '(algorithm/compare))
+;;   '(structure/srfi-69-table))
 
 (define modules
   '(algorithm/compare
@@ -14,6 +14,7 @@
     algorithm/vector
     structure/array
     structure/multi-dimensional-array
+    structure/srfi-69-table
     structure/stream))
 
 (define-task compile ()

@@ -2,10 +2,9 @@
 ;; Do not remove previous line (used for tests)
 ;; Based on code by Kon Lovett, 2009
 
-(include "src/structure/stream-macros.scm")
-(include "src/structure/stream.scm")
-(include "src/algorithm/stream.scm")
-(include "src/algorithm/stream-extra.scm")
+(##import energy: testing)
+(##import algorithm/stream)
+(##import algorithm/stream-extra)
 
 (test-begin "SRFI-41: Streams" 239)
 

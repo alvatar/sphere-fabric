@@ -1,4 +1,5 @@
-(include "src/structure/multi-dimensional-array.scm")
+(##import energy: testing)
+(##import structure/multi-dimensional-array)
 
 (test-begin "SRFI-25: Multi-dimensional-arrays" 169)
 

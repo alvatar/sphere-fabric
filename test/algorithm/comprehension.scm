@@ -1,7 +1,7 @@
 ;; Based on reference implementation by sebastian.egner@philips.com
 
-(include "src/algorithm/comprehension-macros.scm")
-(include "src/algorithm/comprehension.scm")
+(##import energy: testing)
+(##import algorithm/comprehension)
 
 (test-begin "SRFI-42: Eager comprehensions" 157)
 

@@ -5,7 +5,7 @@
  (algorithm/list-extra (include
                         (core: base-macros))
                        (load
-                        (core: functional)
+                        (energy: functional)
                         (= algorithm/list)))
  (algorithm/stream (include
                     (= structure/stream-macros))

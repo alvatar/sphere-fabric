@@ -43,10 +43,12 @@
 ;;! unlist (SRFI-71)
 (define (unlist list)
   (apply values list))
+(define list->values unlist)
 
 ;;! unvector (SRFI-71)
 (define (unvector vector)
   (apply values (vector->list vector)))
+(define vector->values unvector)
 
 ;;! all cars and all cdrs
 (define (cars+cdrs ls)

@@ -1,5 +1,15 @@
 ;;!!! SRFI-41 Streams (derived)
 
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
+
+
 (define (list->stream objs)
   (define list->stream
     (stream-lambda (objs)

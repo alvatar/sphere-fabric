@@ -1,7 +1,15 @@
 ;;!! Extra algorithms on streams (non-SRFI-41)
 
-;; Code by Kon Lovett, 2009
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (fixnum)))
+ (else (declare (block)
+                (standard-bindings)
+                (fixnum)
+                (not safe))))
 
+;; Code by Kon Lovett, 2009
 
 (define-stream (stream-intersperse yy x)
   (stream-match yy

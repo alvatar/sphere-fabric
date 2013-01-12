@@ -9,13 +9,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (cond-expand
- (gambit
-  (declare (standard-bindings)
-           (extended-bindings)
-           (block)
-           (mostly-generic)))
- (else))
-
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
 
 ;;;=============================================================================
 
@@ -111,11 +111,10 @@
 ; Shuffle
 ;-------------------------------------------------------------------------------
 
-;;; Binary Shuffle
-;;; Go through the list, collecting a left list and a right list by
-;;; randomly choosing which list to put successive elements on.
-;;; Recursively the left and right lists, and then concatenate them.
-
+;;! Binary Shuffle
+;; Go through the list, collecting a left list and a right list by
+;; randomly choosing which list to put successive elements on.
+;; Recursively the left and right lists, and then concatenate them.
 (define (binary-shuffle-list list)
   (define (bifurcate list left right)
     (if (null-list? list)
@@ -171,10 +170,10 @@
            (receive (left right) (bifurcate! list '() '())
                     (shuffle! left (shuffle! right tail)))))))
 
-;;; Merge Shuffle
-;;; Partition the list into two equal halves; shuffle the two halves,
-;;; and then merge them by randomly choosing which half to select the
-;;; next element from.
+;;! Merge Shuffle
+;; Partition the list into two equal halves; shuffle the two halves,
+;; and then merge them by randomly choosing which half to select the
+;; next element from.
 
 (define (merge-shuffle-list list)
   (define (merge a b)
@@ -199,9 +198,7 @@
         (if (null-list? (cdr list))
             list
             (receive (a b) (partition list '() '())
-              (merge (shuffle a) (shuffle b)))))))
-
-;;; This has *far* too many SET-CDR!s.
+                     (merge (shuffle a) (shuffle b)))))))
 
 (define (merge-shuffle-list! list)
   (define (merge! a b)
@@ -230,10 +227,9 @@
         (if (null-list? (cdr list))
             list
             (receive (a b) (partition! list '() '())
-              (merge! (shuffle! a) (shuffle! b)))))))
+                     (merge! (shuffle! a) (shuffle! b)))))))
 
-;;;; Insertion Shuffle
-
+;;! Insertion Shuffle
 (define (insertion-shuffle-list list)
   (define (insert list position item)
     (if (zero? position)

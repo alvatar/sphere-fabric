@@ -1,3 +1,14 @@
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
+
+
+
 (define (sorted? seq less? . opt-key)
   (define key (if (null? opt-key) (lambda (x) x) (car opt-key)))
   (cond ((null? seq) #t)
@@ -10,11 +21,11 @@
 		 (and (not (less? nxt last))
 		      (loop nxt (cdr next)))))))))
 
-;;; (merge a b less?)
-;;; takes two lists a and b such that (sorted? a less?) and (sorted? b less?)
-;;; and returns a new list in which the elements of a and b have been stably
-;;; interleaved so that (sorted? (merge a b less?) less?).
-;;; Note:  this does _not_ accept arrays.  See below.
+;;! (merge a b less?)
+;; takes two lists a and b such that (sorted? a less?) and (sorted? b less?)
+;; and returns a new list in which the elements of a and b have been stably
+;; interleaved so that (sorted? (merge a b less?) less?).
+;; Note:  this does _not_ accept arrays.  See below.
 (define (merge a b less? . opt-key)
   (define key (if (null? opt-key) (lambda (x) x) (car opt-key)))
   (cond ((null? a) b)
@@ -62,9 +73,9 @@
 		 (loop a (cdr a) (key (cadr a)) b kcarb))
 	     a))))))
 
-;;; takes two sorted lists a and b and smashes their cdr fields to form a
-;;; single sorted list including the elements of both.
-;;; Note:  this does _not_ accept arrays.
+;;! takes two sorted lists a and b and smashes their cdr fields to form a
+;; single sorted list including the elements of both.
+;; Note:  this does _not_ accept arrays.
 (define (merge! a b less? . opt-key)
   (sort:merge! a b less? (if (null? opt-key) (lambda (x) x) (car opt-key))))
 
@@ -106,12 +117,12 @@
 	(else
 	 (step (length seq)))))
 
-;;; (sort! sequence less?)
-;;; sorts the list, array, or string sequence destructively.  It uses
-;;; a version of merge-sort invented, to the best of my knowledge, by
-;;; David H. D. Warren, and first used in the DEC-10 Prolog system.
-;;; R. A. O'Keefe adapted it to work destructively in Scheme.
-;;; A. Jaffer modified to always return the original list.
+;;! (sort! sequence less?)
+;; sorts the list, array, or string sequence destructively.  It uses
+;; a version of merge-sort invented, to the best of my knowledge, by
+;; David H. D. Warren, and first used in the DEC-10 Prolog system.
+;; R. A. O'Keefe adapted it to work destructively in Scheme.
+;; A. Jaffer modified to always return the original list.
 (define (sort! seq less? . opt-key)
   (define key (if (null? opt-key) #f (car opt-key)))
   (let ((ret (sort:sort-list! seq less? key)))
@@ -124,12 +135,12 @@
                (set-car! ret scar) (set-cdr! ret scdr)))))
     seq))
 
-;;; (sort sequence less?)
-;;; sorts a array, string, or list non-destructively.  It does this
-;;; by sorting a copy of the sequence.  My understanding is that the
-;;; Standard says that the result of append is always "newly
-;;; allocated" except for sharing structure with "the last argument",
-;;; so (append x '()) ought to be a standard way of copying a list x.
+;;! (sort sequence less?)
+;; sorts a array, string, or list non-destructively.  It does this
+;; by sorting a copy of the sequence.  My understanding is that the
+;; Standard says that the result of append is always "newly
+;; allocated" except for sharing structure with "the last argument",
+;; so (append x '()) ought to be a standard way of copying a list x.
 (define (sort seq less? . opt-key)
   (define key (if (null? opt-key) #f (car opt-key)))
   (sort:sort-list! (append seq '()) less? key))

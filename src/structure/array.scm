@@ -27,6 +27,16 @@
 
 ;; Adapted to Gambit by Álvaro Castro-Castilla, Copyright (c) 2012
 
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
+
+
 (define-record-type array-type
   array:construct
   internal-array?

@@ -1,9 +1,15 @@
 ;;; Copyright (c) 2012, Alvaro Castro-Castilla. All rights reserved.
 ;;; More list algorithms
 
-(declare (standard-bindings)
-         (extended-bindings)
-         (fixnum))
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (fixnum)
+                (not safe))))
 
 ;-------------------------------------------------------------------------------
 ; Basic

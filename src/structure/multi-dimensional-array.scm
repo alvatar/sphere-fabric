@@ -1,3 +1,12 @@
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
+
 ;; As record type
 (define-record-type
   array:srfi-9-record-type-descriptor

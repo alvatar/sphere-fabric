@@ -49,6 +49,16 @@
 ;   ls   - loop step
 ;   etc  - more arguments of mixed type
 
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
+
+
 (define (dispatch-union d1 d2)
   (lambda (args)
     (let ((g1 (d1 args)) (g2 (d2 args)))

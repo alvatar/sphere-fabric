@@ -1,6 +1,11 @@
-(declare (standard-bindings)
-         (extended-bindings)
-         (block))
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
 
 ;;!! SRFI-43 Vector library
 

@@ -1,5 +1,11 @@
 ;;!!! SRFI-66 Octet Vectors
 
+(declare
+ (block)
+ (standard-bindings)
+ (extended-bindings)
+ (not safe))
+
 ;; The rest of the API is compatible with SRFI-4 (native in Gambit)
 
 (define (u8vector-copy! source source-start target target-start count)

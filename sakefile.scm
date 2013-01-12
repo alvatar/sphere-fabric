@@ -4,7 +4,7 @@
     algorithm/conversion
     algorithm/list
     algorithm/list-extra
-    algorithm/random
+    ;; algorithm/random
     algorithm/sort-merge
     algorithm/stream
     algorithm/stream-extra
@@ -39,11 +39,10 @@
               #;(sake:install-compiled-module m version: '(debug))
               )
             modules)
-  (sake:install-system-sphere))
+  (sake:install-sphere-in-system))
 
 (define-task uninstall ()
-  (sake:uninstall-system-sphere)
-  (delete-file prelude-system-path))
+  (sake:uninstall-sphere-from-system))
 
 (define-task all (compile install)
   'all)

@@ -4,6 +4,15 @@
 ;; 2009 Kon Lovett
 ;; 2012 Álvaro Castro-Castilla
 
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
+
 ;;!! Streams primitives
 
 (define-record-type stream-type

@@ -206,8 +206,15 @@
 ;;;
 ;;; The SRFI discussion record contains more discussion on this topic.
 
-;; Gambit compiler declarations
-(declare (standard-bindings) (not safe) (fixnum))
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (fixnum)))
+ (else (declare (block)
+                (standard-bindings)
+                (fixnum)
+                (not safe))))
+
 
 ;;! Inverted parameters CONS. Useful as a value to be passed to a fold or other
 ;; higher-order procedure.

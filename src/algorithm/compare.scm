@@ -81,6 +81,17 @@
 ;;     but it can only be used after type-checking at least one of
 ;;     the arguments.
 
+(cond-expand
+ (debug (declare (block)
+                 (standard-bindings)
+                 (extended-bindings)))
+ (else (declare (block)
+                (standard-bindings)
+                (extended-bindings)
+                (not safe))))
+
+
+
 (define (compare:checked result compare . args)
   (for-each (lambda (x) (compare x x)) args)
   result)

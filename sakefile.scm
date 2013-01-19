@@ -39,7 +39,7 @@
               #;(sake:install-compiled-module m version: '(debug))
               )
             modules)
-  (sake:install-sphere-in-system))
+  (sake:install-sphere-to-system))
 
 (define-task uninstall ()
   (sake:uninstall-sphere-from-system))

@@ -418,8 +418,7 @@
    lists))
 
 ;;! pair-fold-x specialization for x=2
-(define pair-fold-2
-  (curry pair-fold-x 2))
+(define pair-fold-2 (lambda (kons knil lists) (pair-fold-x 2 kons knil lists)))
 
 ;-------------------------------------------------------------------------------
 ; Find, remove, substitute, insert
@@ -582,10 +581,10 @@
                                   (cons lcar (X lcdr)))))))) X) l))
 
 ;;! substitute-first
-(define substitute-first (curry x-substitute cons))
+(define substitute-first (lambda (pred? new l) (x-substitute cons pred? new l)))
 
 ;;! Substitution in a list (all elements)
-(define substitute (curry x-substitute append))
+(define substitute (lambda (pred? new l) (x-substitute append pred? new l)))
 
 ;;! Recursive substitution in a list, down to atom-level
 (define (x-subst* maker old new l)
@@ -608,10 +607,10 @@
                                 (cons
                                  (X lcar)
                                  (X lcdr))))))))) X) l))
-(define substitute-first* (curry x-subst* cons))
+(define substitute-first* (lambda (old new l) (x-subst* cons old new l)))
 
 ;;! Recursive substitution with multiple insertion, down to atom-level
-(define substitute* (curry x-subst* append))
+(define substitute* (lambda (old new l) (x-subst* append old new l)))
 
 ;-------------------------------------------------------------------------------
 ; Skeleton/shape

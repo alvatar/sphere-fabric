@@ -19,12 +19,7 @@
 ;;   '(algorithm/sort-merge))
 
 (define-task compile ()
-  (for-each (lambda (m)
-              (sake:compile-c-to-o (sake:compile-to-c m))
-              #;
-              (sake:compile-c-to-o (sake:compile-to-c m
-                                                      version: '(debug)
-                                                      compiler-options: '(debug))))
+  (for-each (lambda (m) (sake:compile-c-to-o (sake:compile-to-c m)))
             modules))
 
 (define-task test ()
@@ -34,11 +29,7 @@
   (sake:default-clean))
 
 (define-task install ()
-  (for-each (lambda (m)
-              (sake:install-compiled-module m)
-              #;(sake:install-compiled-module m version: '(debug))
-              )
-            modules)
+  (for-each sake:install-compiled-module m modules)
   (sake:install-sphere-to-system))
 
 (define-task uninstall ()

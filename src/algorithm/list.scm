@@ -220,13 +220,6 @@
 ;; higher-order procedure.
 (define (xcons d a) (cons a d))
 
-;;! Make a list of length LEN.
-(##define (make-list len #!optional (elt #f))
-  (check-arg (lambda (n) (and (integer? n) (>= n 0))) len make-list)
-  (do ((i len (- i 1))
-       (ans '() (cons elt ans)))
-      ((<= i 0) ans)))
-
 ;;! Make a list of length LEN. Elt i is (PROC i) for 0 <= i < LEN.
 (define (list-tabulate len proc)
   (check-arg (lambda (n) (and (integer? n) (>= n 0))) len list-tabulate)
@@ -251,18 +244,6 @@
     (if (pair? lis)
         (cons (car lis) (recur (cdr lis)))
         lis)))
-
-;;! IOTA count [start step] (start start+step ... start+(count-1)*step)
-(##define (iota count #!optional (start 0) (step 1))
-  (check-arg integer? count iota)
-  (if (< count 0) (error "Negative step count" iota count))
-  (check-arg number? start iota)
-  (check-arg number? step iota)
-  (let ((last-val (+ start (* (- count 1) step))))
-    (do ((count count (- count 1))
-	 (val last-val (- val step))
-	 (ans '() (cons val ans)))
-	((<= count 0)  ans))))
 
 ;;! Circular list
 (define (circular-list val1 . vals)
@@ -660,16 +641,6 @@
         (if (null-list? lis) i
             (lp (cdr lis) (if (pred (car lis)) (+ i 1) i))))))
 
-;;! unfold-right
-(##define (unfold-right p f g seed #!optional (tail '()))
-  (check-arg procedure? p unfold-right)
-  (check-arg procedure? f unfold-right)
-  (check-arg procedure? g unfold-right)
-  (let lp ((seed seed) (ans tail))
-    (if (p seed) ans
-        (lp (g seed)
-            (cons (f seed) ans)))))
-
 ;;! unfold
 (define (unfold p f g seed . tail-gen)
   (check-arg procedure? p unfold)
@@ -992,54 +963,6 @@
 ;;! remove!
 (define (remove! pred l) (filter! (lambda (x) (not (pred x))) l))
 
-;;! delete
-;; delete x lis [=]  Delete by element comparison
-(##define (delete x lis #!optional (= equal?))
-  (filter (lambda (y) (not (= x y))) lis))
-
-;;! delete
-;; delete x lis [=]  Delete by element comparison (destructive version)
-(##define (delete! x lis #!optional (= equal?))
-  (filter! (lambda (y) (not (= x y))) lis))
-
-;; member x lis [=]  Search by element comparison
-;;; Extended from R4RS to take an optional comparison argument.
-(##define (member x lis #!optional (= equal?))
-  (find-tail (lambda (y) (= x y)) lis))
-
-;;! delete-duplicates
-;; Beware -- these are N^2 algorithms. To efficiently remove duplicates
-;; in long lists, sort the list to bring duplicates together, then use a 
-;; linear-time algorithm to kill the dups. Or use an algorithm based on
-;; element-marking. The former gives you O(n lg n), the latter is linear.
-(##define (delete-duplicates lis #!optional (= equal?))
-  (check-arg procedure? = delete-duplicates)
-  (let recur ((lis lis))
-    (if (null-list? lis) lis
-        (let* ((x (car lis))
-               (tail (cdr lis))
-               (new-tail (recur (delete x tail =))))
-          (if (eq? tail new-tail) lis (cons x new-tail))))))
-
-;;! delete-duplicates!
-;; Beware -- these are N^2 algorithms. To efficiently remove duplicates
-;; in long lists, sort the list to bring duplicates together, then use a 
-;; linear-time algorithm to kill the dups. Or use an algorithm based on
-;; element-marking. The former gives you O(n lg n), the latter is linear.
-(##define (delete-duplicates! lis #!optional (= equal?))
-  (check-arg procedure? = delete-duplicates!)
-  (let recur ((lis lis))
-    (if (null-list? lis) lis
-        (let* ((x (car lis))
-               (tail (cdr lis))
-               (new-tail (recur (delete! x tail =))))
-          (if (eq? tail new-tail) lis (cons x new-tail))))))
-
-;;! assoc extended
-;; Extended from R4RS to take an optional comparison argument.
-(##define (assoc x lis #!optional (= equal?))
-  (find (lambda (entry) (= x (car entry))) lis))
-
 ;;! alist-cons
 (define (alist-cons key datum alist)
   (cons (cons key datum) alist))
@@ -1048,14 +971,6 @@
 (define (alist-copy alist)
   (map (lambda (elt) (cons (car elt) (cdr elt)))
        alist))
-
-;;! alist-delete
-(##define (alist-delete key alist #!optional (= equal?))
-  (filter (lambda (elt) (not (= key (car elt)))) alist))
-
-;; alist-delete!
-(##define (alist-delete! key alist #!optional (= equal?))
-  (filter! (lambda (elt) (not (= key (car elt)))) alist))
 
 ;;! find
 (define (find pred list)
@@ -1372,3 +1287,90 @@
                             (not (any (lambda (lis) (member elt lis =))
                                       lists)))
                           lis1))))
+
+;;! Make a list of length LEN.
+(##define (make-list len #!optional (elt #f))
+  (check-arg (lambda (n) (and (integer? n) (>= n 0))) len make-list)
+  (do ((i len (- i 1))
+       (ans '() (cons elt ans)))
+      ((<= i 0) ans)))
+
+;;! IOTA count [start step] (start start+step ... start+(count-1)*step)
+(##define (iota count #!optional (start 0) (step 1))
+  (check-arg integer? count iota)
+  (if (< count 0) (error "Negative step count" iota count))
+  (check-arg number? start iota)
+  (check-arg number? step iota)
+  (let ((last-val (+ start (* (- count 1) step))))
+    (do ((count count (- count 1))
+	 (val last-val (- val step))
+	 (ans '() (cons val ans)))
+	((<= count 0)  ans))))
+
+;;! unfold-right
+(##define (unfold-right p f g seed #!optional (tail '()))
+  (check-arg procedure? p unfold-right)
+  (check-arg procedure? f unfold-right)
+  (check-arg procedure? g unfold-right)
+  (let lp ((seed seed) (ans tail))
+    (if (p seed) ans
+        (lp (g seed)
+            (cons (f seed) ans)))))
+
+
+;;! delete
+;; delete x lis [=]  Delete by element comparison
+(##define (delete x lis #!optional (= equal?))
+  (filter (lambda (y) (not (= x y))) lis))
+
+;;! delete
+;; delete x lis [=]  Delete by element comparison (destructive version)
+(##define (delete! x lis #!optional (= equal?))
+  (filter! (lambda (y) (not (= x y))) lis))
+
+;; member x lis [=]  Search by element comparison
+;;; Extended from R4RS to take an optional comparison argument.
+(##define (member x lis #!optional (= equal?))
+  (find-tail (lambda (y) (= x y)) lis))
+
+;;! delete-duplicates
+;; Beware -- these are N^2 algorithms. To efficiently remove duplicates
+;; in long lists, sort the list to bring duplicates together, then use a 
+;; linear-time algorithm to kill the dups. Or use an algorithm based on
+;; element-marking. The former gives you O(n lg n), the latter is linear.
+(##define (delete-duplicates lis #!optional (= equal?))
+  (check-arg procedure? = delete-duplicates)
+  (let recur ((lis lis))
+    (if (null-list? lis) lis
+        (let* ((x (car lis))
+               (tail (cdr lis))
+               (new-tail (recur (delete x tail =))))
+          (if (eq? tail new-tail) lis (cons x new-tail))))))
+
+;;! delete-duplicates!
+;; Beware -- these are N^2 algorithms. To efficiently remove duplicates
+;; in long lists, sort the list to bring duplicates together, then use a 
+;; linear-time algorithm to kill the dups. Or use an algorithm based on
+;; element-marking. The former gives you O(n lg n), the latter is linear.
+(##define (delete-duplicates! lis #!optional (= equal?))
+  (check-arg procedure? = delete-duplicates!)
+  (let recur ((lis lis))
+    (if (null-list? lis) lis
+        (let* ((x (car lis))
+               (tail (cdr lis))
+               (new-tail (recur (delete! x tail =))))
+          (if (eq? tail new-tail) lis (cons x new-tail))))))
+
+;;! assoc extended
+;; Extended from R4RS to take an optional comparison argument.
+(##define (assoc x lis #!optional (= equal?))
+  (find (lambda (entry) (= x (car entry))) lis))
+
+
+;;! alist-delete
+(##define (alist-delete key alist #!optional (= equal?))
+  (filter (lambda (elt) (not (= key (car elt)))) alist))
+
+;; alist-delete!
+(##define (alist-delete! key alist #!optional (= equal?))
+  (filter! (lambda (elt) (not (= key (car elt)))) alist))

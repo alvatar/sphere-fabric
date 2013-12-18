@@ -29,11 +29,7 @@
   (sake#default-clean))
 
 (define-task install ()
-  (for-each sake#install-compiled-module modules)
-  (sake#install-sphere-to-system))
-
-(define-task uninstall ()
-  (sake#uninstall-sphere-from-system))
+  (for-each sake#install-compiled-module modules))
 
 (define-task all (compile install)
   'all)

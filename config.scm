@@ -6,6 +6,8 @@
                         (core: base-macros))
                        (load
                         (= algorithm/list)))
+ (algorithm/sort-merge (include
+                        (core: base-macros)))
  (algorithm/stream (include
                     (= structure/stream-macros))
                    (load
@@ -18,7 +20,7 @@
  (algorithm/random (load
                     (= algorithm/list)))
  (algorithm/vector (include
-                    (core: optionals-macros)))
+                    (core: base-macros)))
  (structure/stream (load
                     (= algorithm/list)))
  (structure/multi-dimensional-array (load

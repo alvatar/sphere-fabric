@@ -7,6 +7,7 @@
                 (extended-bindings)
                 (not safe))))
 
+
 ;;!! SRFI-43 Vector library
 
 ;;;
@@ -83,6 +84,38 @@
 ;;;
 ;;; Efficiency of the actual algorithms is a rather mundane point to
 ;;; mention; vector operations are rarely beyond being straightforward.
+
+
+;;; Not the best LET*-OPTIONALS, but not the worst, either.  Use Olin's
+;;; if it's available to you.
+(define-syntax let*-optionals
+  (syntax-rules ()
+    ((let*-optionals (?x ...) ((?var ?default) ...) ?body1 ?body2 ...)
+     (let ((args (?x ...)))
+       (let*-optionals args ((?var ?default) ...) ?body1 ?body2 ...)))
+    ((let*-optionals ?args ((?var ?default) ...) ?body1 ?body2 ...)
+     (let*-optionals:aux ?args ?args ((?var ?default) ...)
+       ?body1 ?body2 ...))))
+
+(define-syntax let*-optionals:aux
+  (syntax-rules ()
+    ((aux ?orig-args-var ?args-var () ?body1 ?body2 ...)
+     (if (null? ?args-var)
+         (let () ?body1 ?body2 ...)
+         (error "too many arguments" (length ?orig-args-var)
+                ?orig-args-var)))
+    ((aux ?orig-args-var ?args-var
+         ((?var ?default) ?more ...)
+       ?body1 ?body2 ...)
+     (if (null? ?args-var)
+         (let* ((?var ?default) ?more ...) ?body1 ?body2 ...)
+         (let ((?var (car ?args-var))
+               (new-args (cdr ?args-var)))
+           (let*-optionals:aux ?orig-args-var new-args
+               (?more ...)
+             ?body1 ?body2 ...))))))
+
+
 
 (define (nonneg-int? x)
   (and (integer? x)

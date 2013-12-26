@@ -4,7 +4,7 @@
     algorithm/conversion
     algorithm/list
     algorithm/list-extra
-    ;; algorithm/random
+    ;; algorithm/random TODO!!
     algorithm/sort-merge
     algorithm/stream
     algorithm/stream-extra
@@ -14,9 +14,6 @@
     structure/multi-dimensional-array
     structure/srfi-69-table
     structure/stream))
-
-;; (define modules
-;;   '(algorithm/sort-merge))
 
 (define-task compile ()
   (for-each (lambda (m) (sake#compile-c-to-o (sake#compile-to-c m compiler-options: '(debug)))) modules)

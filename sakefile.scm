@@ -16,8 +16,8 @@
     structure/stream))
 
 (define-task compile ()
-  (for-each (lambda (m) (sake#compile-c-to-o (sake#compile-to-c m compiler-options: '(debug)))) modules)
-  (for-each (lambda (m) (sake#compile-c-to-o (sake#compile-to-c m))) modules))
+  (for-each (lambda (m) (sake#compile-module m compiler-options: '(debug))) modules)
+  (for-each sake#compile-module modules))
 
 (define-task test ()
   (sake#test-all))
@@ -27,6 +27,9 @@
 
 (define-task install ()
   (for-each sake#install-compiled-module modules))
+
+(define-task force-install ()
+  (sake#install-sphere-to-system))
 
 (define-task all (compile install)
   'all)

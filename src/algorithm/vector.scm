@@ -85,9 +85,61 @@
 ;;; Efficiency of the actual algorithms is a rather mundane point to
 ;;; mention; vector operations are rarely beyond being straightforward.
 
+;; Olin's let-optionals
+
+(define-syntax :optional
+  (syntax-rules ()
+    ((:optional x default)
+     (let ((x x))
+       (if (pair? x)
+           (if (not (null? (cdr x)))
+               (error "Too many arguments in :OPTIONAL.")
+               (car x))
+           default)))
+    ((:optional x default check)
+     (let ((x x))
+       (if (pair? x)
+           (cond ((not (null? (cdr x)))
+                  (error "Too many arguments in :OPTIONAL."))
+                 ((not (check (car x)))
+                  (error "Value in :OPTIONAL does not check out OK: " (car x)))
+                 (else
+                  (car x)))
+           default)))))
+
+(define-syntax let-optionals* 
+  (syntax-rules ()
+    ((_ opt-ls () body ...)
+     (let () body ...))
+    ((_ (expr ...) vars body ...)
+     (let ((tmp (expr ...)))
+       (let-optionals* tmp vars body ...)))
+    ((_ tmp ((var default) . rest) body ...)
+     (let ((var (if (pair? tmp) (car tmp) default))
+           (tmp2 (if (pair? tmp) (cdr tmp) '())))
+       (let-optionals* tmp2 rest body ...)))
+    ((_ tmp tail body ...)
+     (let ((tail tmp))
+       body ...))))
+
+(define-syntax let-optionals 
+  (syntax-rules ()
+    ((_ opt-ls () body ...)
+     (let () body ...))
+    ((_ (expr ...) vars body ...)
+     (let ((tmp (expr ...)))
+       (let-optionals tmp vars body ...)))
+    ((_ tmp ((var default) . rest) body ...)
+     (let ((var (if (pair? tmp) (car tmp) default))
+           (tmp2 (if (pair? tmp) (cdr tmp) '())))
+       (let-optionals tmp2 rest body ...)))
+    ((_ tmp tail body ...)
+     (let ((tail tmp))
+       body ...))))
 
 ;;; Not the best LET*-OPTIONALS, but not the worst, either.  Use Olin's
 ;;; if it's available to you.
+
 (define-syntax let*-optionals
   (syntax-rules ()
     ((let*-optionals (?x ...) ((?var ?default) ...) ?body1 ?body2 ...)

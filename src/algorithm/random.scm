@@ -1,8 +1,6 @@
-;;; Copyright (c) 2012, Alvaro Castro-Castilla. All rights reserved.
-;;; List randomization and related algorithms
+;;; Copyright (c) 2012-2014, Alvaro Castro-Castilla. All rights reserved.
+;;; Shuffling, Random picking, Reservoir sampling
 
-;;; Copyright (c) Taylor Cambpell. Public domain.
-;;; (binary, merge, insertion, selection, Fisher-Yates)
 
 (cond-expand
  (optimize
@@ -11,105 +9,10 @@
   (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
  (else))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Shuffling and Reservoir Sampling
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;------------------------------------------------------------------------------
+;;!! Shuffling
 
-
-
-;;;=============================================================================
-
-;;; Provides procedures to get random bits of high quality.
-
-(package* random/v1.0.0
- (provide:
-
-  (define* (make-random-u8vector len))
-  (define* (random-bignum range))
-  (define* (random-fixnum range)))
-
- (maintainer:
-  "Scheme Now! <snow at iro.umontreal.ca>")
-
- (author:
-  "Marc Feeley <feeley at iro.umontreal.ca>")
-
- (homepage:
-  "http://snow.iro.umontreal.ca")
-
- (description:
-  "High-quality random number generation.")
-
- (keywords: snow)
-
- (license: lgpl/v2.1)
-
- (require: homovector/v1)
- (require: binio/v1)
- (require: bignum/v1))
-
-;;;=============================================================================
-
-(cond-expand
-
- ((and srfi-27
-       (not gauche) ;; work around a bug in Gauche
-       (not stklos)) ;; work around a bug in STklos
-
-  (define* (make-random-u8vector len)
-    (let* ((rs (make-random-source))
-           (mi (random-source-make-integers rs))
-           (u8vect (snow-make-u8vector len)))
-      (random-source-randomize! rs)
-      (let loop ((i 0))
-        (if (< i len)
-            (begin
-              (snow-u8vector-set! u8vect i (mi 256))
-              (loop (+ i 1)))))
-      u8vect)))
-
- (else
-
-  (define-macro* (random-bits-file) "/dev/random")
-
-  (define* (make-random-u8vector len)
-    (let* ((in (binio-open-input-file (random-bits-file)))
-           (u8vect (snow-make-u8vector len))
-           (n (binio-read-subu8vector u8vect 0 len in)))
-      (binio-close-input-port in)
-      (if (= n len)
-          u8vect
-          (snow-error "random bits file ended prematurely"))))))
-
-;;;----------------------------------------------------------------------------
-
-(define* (random-bignum range)
-  (let* ((range-bits (bignum-integer-length range))
-         (len (quotient (+ range-bits 20) 8))
-         (n (bignum-expt (fixnum->bignum 256) (fixnum->bignum len)))
-         (divisor (bignum-quotient n range))
-         (limit (bignum* divisor range)))
-    (let loop ()
-      (let* ((u8vect (make-random-u8vector len))
-             (x (fixnum-list->bignum (snow-u8vector->list u8vect) 255)))
-        (if (bignum>= x limit)
-            (loop)
-            (bignum-quotient x divisor))))))
-
-(define* (random-fixnum range)
-  (bignum->fixnum (random-bignum (fixnum->bignum range))))
-
-;;;=============================================================================
-
-
-
-
-
-(define (flip-coin) (if (= 1 (random-integer 2)) #t #f))
-
-;-------------------------------------------------------------------------------
-; Shuffle
-;-------------------------------------------------------------------------------
+;;; Copyright (c) Taylor Cambpell. Public domain.
 
 ;;! Binary Shuffle
 ;; Go through the list, collecting a left list and a right list by
@@ -174,7 +77,6 @@
 ;; Partition the list into two equal halves; shuffle the two halves,
 ;; and then merge them by randomly choosing which half to select the
 ;; next element from.
-
 (define (merge-shuffle-list list)
   (define (merge a b)
     (cond ((not (pair? a)) b)
@@ -272,8 +174,7 @@
                             (begin (insert! (cdr out) out position in)
                                    out))))))))))
 
-;;; Selection Shuffle
-
+;;! Selection Shuffle
 (define (selection-shuffle-list list)
   (define (select list position)
     (if (zero? position)
@@ -312,8 +213,7 @@
                        cell
                        (loop next cell (- len 1))))))))
 
-;;; Fisher-Yates O(n) Random-Access Shuffle
-
+;;! Fisher-Yates O(n) Random-Access Shuffle
 (define (Fisher-Yates-shuffler sequence-exchange!)
   (lambda (sequence start end)
     (do ((i start (+ i 1)))
@@ -335,22 +235,23 @@
 (define shuffle-string!
   (Fisher-Yates-shuffler (sequence-exchanger string-ref string-set!)))
 
-;-------------------------------------------------------------------------------
-; Random picking
-;-------------------------------------------------------------------------------
 
-;;; Pick a random element with known list length
+;;------------------------------------------------------------------------------
+;;!! Random picking
 
+;;! Random binary decision
+(define (flip-coin)
+  (zero? (random-integer 2)))
+
+;;! Pick a random element with known list length
 (define (pick-random/length l len)
   (list-ref l (random-integer len)))
 
-;;; Pick a random element
-
+;;! Pick a random element with unknown list length
 (define (pick-random l)
   (pick-random/length l (length l)))
 
-;;; Pick a number of random elements without repetition
-
+;;! Pick a number of random elements without repetition
 (define (pick-random//repetition l n)
   (let recur ((l l)
               (n n)
@@ -363,186 +264,52 @@
                         (-- n)
                         (cons (car aft) picked))))))
 
-;;; Pick a random element and return also the list without that element
-
+;;! Pick a random element and return also the list without that element
 (define (pick-random+rember/length l len)
-  (receive (a b)
-           (split-at l
-                     (random-integer len))
-           (values
-            (car b)
-            (append a (cdr b)))))
+  (let ((rnd (random-integer len)))
+    (let recur ((rest l)
+                (i 0))
+      (if (fx= i rnd)
+          (values (car rest) (cdr rest))
+          (receive (head tail)
+                   (recur (cdr rest) (fx+ 1 i))
+                   (values head
+                           (cons (car rest)
+                                 tail)))))))
 
-;;; Pick a random element and return also the list without that element
-
+;;! Pick a random element and return also the list without that element
 (define (pick-random+rember l)
   (pick-random+rember/length l (length l)))
 
-;-------------------------------------------------------------------------------
-; Reservoir sampling
-;-------------------------------------------------------------------------------
 
-;;; Naïve implementation of reservoir sampling. It shuffles the list and picks
-;;; the top n as the reservoir.
-;;; TODO: A better algorithm would build a list of length n filling it with
-;;; randomly picked elements
-;;; 
+;;------------------------------------------------------------------------------
+;; Reservoir sampling
 
-(define (reservoir-sampling shuffler lis n)
-  (take (shuffler lis) n))
-;; (require srfi/27)
-;; (require srfi/41)
-;; (define (random-sample size input)
-;;   (let ((first-part (stream-take size input))
-;;         (second-part (stream-drop size input))
-;;         (pool (make-vector size)))
-;;     (stream-for-each (match-lambda ((list i val)
-;;                                     (vector-set! pool i val)))
-;;                      (stream-zip (stream-from 0) first-part))
-;;     (stream-for-each (match-lambda ((list i val)
-;;                                     (let ((random-index (random-integer i)))
-;;                                       (when (< random-index size)
-;;                                         (vector-set! pool random-index val)))))
-;;                      (stream-zip (stream-from size) second-part))
-;;     (vector->list pool)))
+;;! Reservoir Sampling. Get a number of random elements from a list or stream
+(define random-sample 
+  (match-lambda*
+   ((size (? list? input))
+    (random-sample size (list->stream input)))
+   ((size (? stream? input))
+    (let ((first-part (stream-take size input))
+          (second-part (stream-drop size input))
+          (pool (make-vector size)))
+      (stream-for-each (match-lambda ((i val)
+                                      (vector-set! pool i val)))
+                       (stream-zip (stream-from 0) first-part))
+      (stream-for-each (match-lambda ((i val)
+                                      (let ((index (random-integer i)))
+                                        (and (< index size)
+                                             (vector-set! pool index val)))))
+                       (stream-zip (stream-from size) second-part))
+      (vector->list pool)))))
 
-
-; Select a uniformly distributed random node from a tree in one pass,
-; without an a priori knowledge on the number of nodes in the tree.
-;
-; The algorithm is an instance of a Reservoir sampling:
-; Select at random N records from a sequence -- without a
-; priori knowledge of the total number of records in a sequence
-; (provided that this number is greater than N). The method guarantees
-; that each record is selected with a probability of N/M, where M is the
-; total number of the records in the sequence.
-;
-; See
-; Reservoir Sampling
-; by Paul F. Hultquist and William R. Mahoney
-; Dr. Dobbs J., January 2001, p. 189.
-; The "Algorithm Alley" column.
-; The algorithm was originally developed by Alan Waterman.
-; 
-; Article posting headers:
-;   Date: Tue, 15 Apr 2003 22:17:15 -0700
-;   Newsgroups: comp.lang.scheme
-;   Subject: Re: random node in tree
-;   References: <mYZma.4116$8T6.318252@news20.bellglobal.com>
-;   Message-ID: <7eb8ac3e.0304152117.3124c038@posting.google.com>
-;
-; $Id: random-tree-node.scm,v 1.1 2003/04/17 02:13:43 oleg Exp oleg $
-
-
-;   procedure random-node TREE -> [COUNT NODE]
-; Traverse the TREE _once_ and return COUNT, the total number of nodes
-; in the tree, and NODE -- one node of the tree selected with
-; the probability of 1/COUNT. TREE must be a pair.
-;
-; We consider '() to be the absence of a child. Thus
-; '(a . ()) is a tree with one, left child.
-; '(() . a) is a tree with one right child.
-; We do not count leaves as nodes. Only internal nodes (aka, pairs)
-; count. If we wish to count leaves too (which are atoms other than
-; '()), replace "(if (not (pair? node)) ...)" test below with
-; "(if (null? node) ...)".
-
-; We assume that a procedure (random i j) returns a random integer k,
-; i <= k <= j, that is uniformly distributed within the interval [i,j]
-; (endpoints included!)
-
-(define (random-node tree)
-  (let select ((node  (car tree)) (p 1) (reservoir tree)
-	       (todo (list (cdr tree))))
-    (if (not (pair? node))			; Leaves don't count
-      (if (null? todo) (values p reservoir)
-	(select (car todo) p reservoir (cdr todo)))
-    (let*
-      ((p (+ 1 p))
-       (k (random 1 p))
-       (reservoir (if (= k 1) node reservoir)))
-      (if (pair? node)
-	(select (car node) p reservoir (cons (cdr node) todo))
-	(if (null? todo) (values p reservoir)
-	  (select (car todo) p reservoir (cdr todo))))))))
-
-
-; Proof of the algorithm.
-;
-; Claim:
-; At each invocation of 
-;	(select node p reservoir todo)
-; p>=1 is the number of previously traversed nodes (up to but not including
-;   'node')
-; 'node' is either '() or the the (p+1)-th node of the tree
-; reservoir is the node randomly selected from the traversed
-;     with the probability 1/p
-; todo is the stack of right brothers of 'node'
-
-; Proof by induction:
-;
-; Base case: initial invocation.
-; 'node' is the left child of the root or '(), todo a singleton list
-; that contains its right brother, p = 1 and reservoir is the traversed
-; node (which is the root).
-; Claim holds.
-;
-; Induction hypothesis: Claim holds after q nodes are traversed, 
-; as we enter (select node q reservoir todo)
-; If 'node' does not count (it's '() or a leaf, if we don't count leaves)
-; we skip it and continue the pre-order traversal. 
-; If 'node' is the node that counts, we set q' to q+1, k to be a
-; number uniformly distributed 1 <= k <= q'. The number k has the probability
-; 1/q' = 1/(q+1) of being 1.
-; We set reservoir to be 'node' with the probability 1/(q+1),
-; we maintain the current value of the reservoir with the probability
-; 1 - 1/(q+1) = q/(q+1). Thus reservoir is one of the q previously
-; traversed nodes selected with the probability 1/q * q/(q+1) = 1/(q+1).
-; If node has children, we recursively enter select, with
-; the first argument being the left child of 'node' or nil, 
-; the second argument (q+1) -- the number of nodes traversed,--
-; reservoir is the node selected uniformly at random from the traversed,
-; todo is the (grown) stack of the right brothers of the first argument.
-; The claim holds.
-; If 'node' is not a pair but 'todo' is not empty, we re-enter
-; select but the invariant holds. If we don't count leaves as nodes,
-; the latter alternative does not apply.
-;
-; It follows from the claim that when 'select' exits,
-; it returns the total number of nodes in the tree and one node
-; uniformly randomly selected from the them.
-
-
-; Tests
-
-; In the following we define (random i j) to always return its left
-; boundary.
-(define (random i j) i)
-
-; With such a definition of "random", (random-node tree) will return
-; the last traversed node.
-
-(define (test-random-node tree)
-  (display "Tree: ") (display tree) (newline)
-  (call-with-values 
-    (lambda () (random-node tree))
-    (lambda (count rand-node)
-      (display "total count: ") (display count)
-      (display " selected node: ") (display rand-node)
-      (newline))))
-
-(test-random-node '(a))
-(test-random-node '(() . (b c)))
-(test-random-node '(() . (b . c)))
-(test-random-node '(* (+ 3 4) 5))
-
-; Results of the test runs
-; Tree: (a)
-; total count: 1 selected node: (a)
-; Tree: (() b c)
-; total count: 3 selected node: (c)
-; Tree: (() b . c)
-; total count: 2 selected node: (b . c)
-; Tree: (* (+ 3 4) 5)
-; total count: 6 selected node: (5)
-
+;;! Ordered Reservoir Sampling. Get the results in the original order
+(define ordered-random-sample
+  (match-lambda*
+   ((size (? list? input))
+    (ordered-random-sample size (list->stream input)))
+   ((size (? stream? input))
+    (let* ((enumerated-input (stream-zip input (stream-from 0)))
+           (results (random-sample size enumerated-input)))
+      (map first (sort results (lambda (a b) (< (cadr a) (cadr b)))))))))

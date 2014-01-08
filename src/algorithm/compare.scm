@@ -81,15 +81,13 @@
 ;;     but it can only be used after type-checking at least one of
 ;;     the arguments.
 
-(cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
 
+(cond-expand
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 
 (define (compare:checked result compare . args)

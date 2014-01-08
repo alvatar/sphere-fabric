@@ -2,16 +2,15 @@
 ;; Copyright (C) Philip L. Bewig (2007). All Rights Reserved.
 ;; Modifications:
 ;; 2009 Kon Lovett
-;; 2012 Álvaro Castro-Castilla
+;; 2012-2014 Álvaro Castro-Castilla
+
 
 (cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 ;;!! Streams primitives
 

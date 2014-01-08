@@ -1,40 +1,30 @@
-;;!!! SRFI-63:
+;; Copyright (C) 2001, 2003 Aubrey Jaffer
+;; "array.scm" Arrays for Scheme
+
+;; Permission to copy this software, to modify it, to redistribute it,
+;; to distribute modified versions, and to use it for any purpose is
+;; granted, subject to the following restrictions and understandings.
+;; 1.  Any copy made of this software must include this copyright notice
+;; in full.
+;; 2.  I have made no warranty or representation that the operation of
+;; this software will be error-free, and I am under no obligation to
+;; provide any services, by way of maintenance, update, or otherwise.
+;; 3.  In conjunction with products arising from the use of this
+;; material, there shall be no use of my name in any advertising,
+;; promotional, or sales literature without prior written consent in
+;; each case.
+
+;;;!!! SRFI-63
 
 ;; Important Notice: EQUAL? has been renamed with ARRAY:EQUAL? to allow
 ;; coexistence with native implementation
 
-;;"array.scm" Arrays for Scheme
-; Copyright (C) 2001, 2003 Aubrey Jaffer
-;
-;Permission to copy this software, to modify it, to redistribute it,
-;to distribute modified versions, and to use it for any purpose is
-;granted, subject to the following restrictions and understandings.
-;
-;1.  Any copy made of this software must include this copyright notice
-;in full.
-;
-;2.  I have made no warranty or representation that the operation of
-;this software will be error-free, and I am under no obligation to
-;provide any services, by way of maintenance, update, or otherwise.
-;
-;3.  In conjunction with products arising from the use of this
-;material, there shall be no use of my name in any advertising,
-;promotional, or sales literature without prior written consent in
-;each case.
-
-;;@code{(require 'array)} or @code{(require 'srfi-63)}
-;;@ftindex array
-
-;; Adapted to Gambit by Álvaro Castro-Castilla, Copyright (c) 2012
-
 (cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 
 (define-record-type array-type

@@ -1,17 +1,15 @@
 ;;!!! SRFI-69: Basic hash tables
 ;; Copyright (C) Panu Kalliokoski (2005). All Rights Reserved.
-
-(cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
-
 ;; This SRFI is provided for supporting modules that require this API.
 ;; However, Gambit provides a native Table type. Its usage is encouraged.
+
+
+(cond-expand
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 (define *default-bound* (- (expt 2 29) 3))
 

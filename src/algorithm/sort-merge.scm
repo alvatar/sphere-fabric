@@ -1,12 +1,12 @@
-(cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
+;;; SRFI-95, Richard A. O'Keefe (based on Prolog code by D.H.D.Warren) (2006)
+;;; "sort.scm" Defines: sorted?, merge, merge!, sort, sort!
 
+(cond-expand
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 
 (define (sorted? seq less? . opt-key)

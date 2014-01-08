@@ -1,14 +1,13 @@
-;;; Copyright (c) 2012, Alvaro Castro-Castilla. All rights reserved.
+;;; Copyright (c) 2012-2014, Alvaro Castro-Castilla. All rights reserved.
 ;;; Data conversion procedures
 
+
 (cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 
 ;;; 0.0-1.0 range to u8 integer

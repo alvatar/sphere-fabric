@@ -1,18 +1,3 @@
-(cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
-
-
-;;!! SRFI-43 Vector library
-
-;;;
-;;; $Id: vector-lib.scm,v 1.7 2009/03/29 09:46:03 sperber Exp $
-;;;
 ;;; Taylor Campbell wrote this code; he places it in the public domain.
 ;;; Will Clinger [wdc] made some corrections, also in the public domain.
 
@@ -84,6 +69,15 @@
 ;;;
 ;;; Efficiency of the actual algorithms is a rather mundane point to
 ;;; mention; vector operations are rarely beyond being straightforward.
+
+;;;!!! SRFI-43 Vector library
+
+(cond-expand
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 ;; Olin's let-optionals
 

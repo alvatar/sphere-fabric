@@ -1,11 +1,12 @@
+;;; Copyright (c) 2002 Jussi Piitulainen. All rights reserved.
+
 (cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (extended-bindings)))
- (else (declare (block)
-                (standard-bindings)
-                (extended-bindings)
-                (not safe))))
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
+
 
 ;; As record type
 (define-record-type
@@ -16,9 +17,8 @@
   (ind array:index)
   (shp array:shape))
 
-;-------------------------------------------------------------------------------
-; From reference implementation: op-tter
-;-------------------------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; Reference implementation: op-tter
 
 (define array:opt-args '(tter (3 -1 0 1) (4 0)))
 (define (array:optimize f r)
@@ -968,9 +968,8 @@
 (define (array:apply-to-actor r p a)
   ((array:applier-to-actor r) p a))
 
-;-------------------------------------------------------------------------------
-; From reference implementation: ix-tter
-;-------------------------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; From reference implementation: ix-tter
 
 (define (array-ref a . xs)
   (or (array:array? a)
@@ -1042,9 +1041,8 @@
                      (car xs))
                     (error "array:set!: bad index object")))))))
 
-;-------------------------------------------------------------------------------
-; From reference implementation: array.scm
-;-------------------------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; Reference implementation: array.scm
 
 ;;; array
 ;;; 1997 - 2001 Jussi Piitulainen

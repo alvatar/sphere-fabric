@@ -206,15 +206,13 @@
 ;;;
 ;;; The SRFI discussion record contains more discussion on this topic.
 
-(cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (fixnum)))
- (else (declare (block)
-                (standard-bindings)
-                (fixnum)
-                (not safe))))
 
+(cond-expand
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 ;;! Inverted parameters CONS. Useful as a value to be passed to a fold or other
 ;; higher-order procedure.

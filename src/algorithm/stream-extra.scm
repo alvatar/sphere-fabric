@@ -1,15 +1,13 @@
-;;!! Extra algorithms on streams (non-SRFI-41)
+;;; Copyright (c) 2008, Kon Lovett. All rights reserved.
+;;; Copyright (c) 2012-2014, Alvaro Castro-Castilla. All rights reserved.
+;;; Extra algorithms on streams, adds functionality to SRFI-41
 
 (cond-expand
- (debug (declare (block)
-                 (standard-bindings)
-                 (fixnum)))
- (else (declare (block)
-                (standard-bindings)
-                (fixnum)
-                (not safe))))
-
-;; Code by Kon Lovett, 2009
+ (optimize
+  (declare (standard-bindings) (extended-bindings) (not safe) (block)))
+ (debug
+  (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
+ (else))
 
 (define-stream (stream-intersperse yy x)
   (stream-match yy

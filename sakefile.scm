@@ -4,7 +4,7 @@
     algorithm/conversion
     algorithm/list
     algorithm/list-extra
-    ;; algorithm/random TODO!!
+    algorithm/random
     algorithm/sort-merge
     algorithm/stream
     algorithm/stream-extra

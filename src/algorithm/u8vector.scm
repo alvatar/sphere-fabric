@@ -9,7 +9,7 @@
   (declare (standard-bindings) (extended-bindings) (not safe) (block)))
  (debug
   (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
- (else))
+ (else (void)))
 
 ;;! Copies data from octet vector source to octet vector target. Source-start,
 ;; target-start, and n must be non-negative exact integers that satisfy

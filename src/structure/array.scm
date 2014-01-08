@@ -24,7 +24,7 @@
   (declare (standard-bindings) (extended-bindings) (not safe) (block)))
  (debug
   (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
- (else))
+ (else (void)))
 
 
 (define-record-type array-type

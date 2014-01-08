@@ -212,7 +212,7 @@
   (declare (standard-bindings) (extended-bindings) (not safe) (block)))
  (debug
   (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
- (else))
+ (else (void)))
 
 ;;! Inverted parameters CONS. Useful as a value to be passed to a fold or other
 ;; higher-order procedure.

@@ -5,6 +5,7 @@
     algorithm/list
     algorithm/list-extra
     algorithm/random
+    algorithm/shuffle
     algorithm/sort-merge
     algorithm/stream
     algorithm/stream-extra

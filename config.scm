@@ -8,6 +8,9 @@
    (core: base-macros))
   (load
    (= algorithm/list)))
+ (algorithm/shuffle
+  (load
+   (= algorithm/list)))
  (algorithm/sort-merge
   (include
    (core: base-macros)))
@@ -24,7 +27,6 @@
   (include
    (core: match-macros))
   (load
-   (= algorithm/list)
    (= algorithm/sort-merge)
    (= algorithm/stream)))
  (algorithm/vector

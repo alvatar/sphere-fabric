@@ -1,7 +1,6 @@
 (define modules
   '(algorithm/compare
     algorithm/comprehension
-    algorithm/conversion
     algorithm/list
     algorithm/list-extra
     algorithm/random

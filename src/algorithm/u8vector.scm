@@ -126,13 +126,27 @@
           new-u8v)
         u8v)))
 
-(define (u8vector-xor u8v with-byte)
+;;!! u8vector-xor
+(define (u8vector-xor u8vect1 u8vect2)
+  (let* ((len (u8vector-length u8vect1))
+         (result (make-u8vector len)))
+    (let loop ((i (- len 1)))
+      (if (>= i 0)
+          (begin
+            (u8vector-set! result i (fxxor (u8vector-ref u8vect1 i)
+                                           (u8vector-ref u8vect2 i)))
+            (loop (- i 1)))
+          result))))
+
+;;!! u8vector-xor with a single byte
+(define (u8vector-xor/byte u8v with-byte)
   (let* ((length (u8vector-length u8v))
          (new-u8v (make-u8vector length)))
     (let loop ((at 0))
       (if (##not (##eq? length at))
           (begin
-            (##u8vector-set! new-u8v at (##fxxor (##u8vector-ref u8v at) with-byte))
+            (##u8vector-set! new-u8v at (##fxxor (##u8vector-ref u8v at)
+                                                 with-byte))
             (loop (##fx+ at 1)))))
     new-u8v))
 

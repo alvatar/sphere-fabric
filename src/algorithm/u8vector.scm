@@ -75,7 +75,7 @@
 
 
 ;; U8vector manipulation / handling
-;; Author: Mikael Möre
+;; Author: Marc Feeley 
 ;;
 ;; (apply-u8vector-append u8vector-list)
 ;;

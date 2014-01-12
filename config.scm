@@ -25,10 +25,14 @@
    (= algorithm/stream)))
  (algorithm/random
   (include
+   (core: base-macros)
    (core: match-macros))
   (load
    (= algorithm/sort-merge)
    (= algorithm/stream)))
+ (algorithm/u8vector
+  (include
+   (core: base-macros)))
  (algorithm/vector
   (include
    (core: base-macros)))

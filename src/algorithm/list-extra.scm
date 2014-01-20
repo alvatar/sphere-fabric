@@ -104,13 +104,21 @@
 ; Map/fold variants
 ;-------------------------------------------------------------------------------
 
-;;! Recursive map
+;;! Recursive map that applies function to leafs
 (define (map* f l)
   (cond
    ((null? l) '())
    ((not (pair? l)) (f l))
    (else
     (cons (map* f (car l)) (map* f (cdr l))))))
+
+;;! Recursive map that applies function to each node
+(define (map** f l)
+  (cond
+   ((null? l) '())
+   ((not (pair? l)) (f l))
+   (else
+    (cons (f (map** f (car l))) (f (map** f (cdr l)))))))
 
 ;;! Map applying the function only to the elements satisfying predicate
 (define-syntax map-if

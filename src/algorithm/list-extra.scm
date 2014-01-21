@@ -9,19 +9,6 @@
  (else (void)))
 
 
-
-
-(define-syntax values->list
-  (syntax-rules ()
-    ((_ x)
-     (call-with-values (lambda () x) list))))
-
-(define-syntax values-length
-  (syntax-rules ()
-    ((_ producer)
-     (call-with-values (lambda () producer) (lambda v (length v))))))
-
-
 ;-------------------------------------------------------------------------------
 ; Basic
 ;-------------------------------------------------------------------------------

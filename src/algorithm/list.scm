@@ -1287,14 +1287,14 @@
                           lis1))))
 
 ;;! Make a list of length LEN.
-(##define (make-list len #!optional (elt #f))
+(define* (make-list len (elt #f))
   (check-arg (lambda (n) (and (integer? n) (>= n 0))) len make-list)
   (do ((i len (- i 1))
        (ans '() (cons elt ans)))
       ((<= i 0) ans)))
 
 ;;! IOTA count [start step] (start start+step ... start+(count-1)*step)
-(##define (iota count #!optional (start 0) (step 1))
+(define* (iota count (start 0) (step 1))
   (check-arg integer? count iota)
   (if (< count 0) (error "Negative step count" iota count))
   (check-arg number? start iota)
@@ -1306,7 +1306,7 @@
 	((<= count 0)  ans))))
 
 ;;! unfold-right
-(##define (unfold-right p f g seed #!optional (tail '()))
+(define* (unfold-right p f g seed (tail '()))
   (check-arg procedure? p unfold-right)
   (check-arg procedure? f unfold-right)
   (check-arg procedure? g unfold-right)
@@ -1318,17 +1318,18 @@
 
 ;;! delete
 ;; delete x lis [=]  Delete by element comparison
-(##define (delete x lis #!optional (= equal?))
+(define* (delete x lis (= equal?))
   (filter (lambda (y) (not (= x y))) lis))
 
 ;;! delete
 ;; delete x lis [=]  Delete by element comparison (destructive version)
-(##define (delete! x lis #!optional (= equal?))
+(define* (delete! x lis (= equal?))
   (filter! (lambda (y) (not (= x y))) lis))
 
 ;; member x lis [=]  Search by element comparison
 ;;; Extended from R4RS to take an optional comparison argument.
-(##define (member x lis #!optional (= equal?))
+;; NOTE: renamed from SRFI-1 to member+
+(define* (member+ x lis (= equal?))
   (find-tail (lambda (y) (= x y)) lis))
 
 ;;! delete-duplicates
@@ -1336,7 +1337,7 @@
 ;; in long lists, sort the list to bring duplicates together, then use a 
 ;; linear-time algorithm to kill the dups. Or use an algorithm based on
 ;; element-marking. The former gives you O(n lg n), the latter is linear.
-(##define (delete-duplicates lis #!optional (= equal?))
+(define* (delete-duplicates lis (= equal?))
   (check-arg procedure? = delete-duplicates)
   (let recur ((lis lis))
     (if (null-list? lis) lis
@@ -1350,7 +1351,7 @@
 ;; in long lists, sort the list to bring duplicates together, then use a 
 ;; linear-time algorithm to kill the dups. Or use an algorithm based on
 ;; element-marking. The former gives you O(n lg n), the latter is linear.
-(##define (delete-duplicates! lis #!optional (= equal?))
+(define* (delete-duplicates! lis (= equal?))
   (check-arg procedure? = delete-duplicates!)
   (let recur ((lis lis))
     (if (null-list? lis) lis
@@ -1361,14 +1362,15 @@
 
 ;;! assoc extended
 ;; Extended from R4RS to take an optional comparison argument.
-(##define (assoc x lis #!optional (= equal?))
+;; NOTE: renamed from SRFI-1 to assoc+
+(define* (assoc+ x lis (= equal?))
   (find (lambda (entry) (= x (car entry))) lis))
 
 
 ;;! alist-delete
-(##define (alist-delete key alist #!optional (= equal?))
+(define* (alist-delete key alist (= equal?))
   (filter (lambda (elt) (not (= key (car elt)))) alist))
 
 ;; alist-delete!
-(##define (alist-delete! key alist #!optional (= equal?))
+(define* (alist-delete! key alist (= equal?))
   (filter! (lambda (elt) (not (= key (car elt)))) alist))

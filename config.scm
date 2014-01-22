@@ -20,6 +20,8 @@
   (load
    (= structure/stream)))
  (algorithm/stream-extra
+  (include
+   (= structure/stream-macros))
   (load
    (= structure/stream)
    (= algorithm/stream)))

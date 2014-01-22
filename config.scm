@@ -3,6 +3,9 @@
  (algorithm/compare
   (include
    (core: base-macros)))
+ (algorithm/list
+  (include
+   (core: base-macros)))
  (algorithm/list-extra
   (include
    (core: base-macros))

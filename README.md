@@ -27,3 +27,7 @@ Otherwise, please read the [quickstart guide](http://www.schemespheres.org/guide
 * SRFI-69 compatible table (although Gambit provides it's own tables implementation)
 * Streams (SRFI-41)
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/alvatar/sphere-fabric/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+

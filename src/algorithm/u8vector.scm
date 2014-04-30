@@ -26,30 +26,31 @@
 ;; However, the number of return values is such that it is accepted by a
 ;; continuation created by begin. Analogous to vector-ref.
 ;; .author Michael Sperber
-(define (u8vector-copy! source source-start target target-start count)
-  (if (>= source-start target-start)
-      (do ((i 0 (+ i 1)))
-	  ((= i count))
-        (u8vector-set! target
-                       (+ target-start i) 
-                       (u8vector-ref source (+ source-start i))))
-      (do ((i (- count 1) (- i 1)))
-	  ((= i -1))
-        (u8vector-set! target
-                       (+ target-start i) 
-                       (u8vector-ref source (+ source-start i))))))
+;; (define (u8vector-copy! source source-start target target-start count)
+;;   (if (>= source-start target-start)
+;;       (do ((i 0 (+ i 1)))
+;; 	  ((= i count))
+;;         (u8vector-set! target
+;;                        (+ target-start i) 
+;;                        (u8vector-ref source (+ source-start i))))
+;;       (do ((i (- count 1) (- i 1)))
+;; 	  ((= i -1))
+;;         (u8vector-set! target
+;;                        (+ target-start i) 
+;;                        (u8vector-ref source (+ source-start i))))))
+;; .author Arthur T Smyles
+(define (u8vector-copy! source source-start target target-start n)
+  (subu8vector-move! source source-start (+ source-start n) target target-start))
 
-;;! Returns #t if u8vector-1 and u8vector-2 are equal---that is, if they
-;; have the same length and equal elements at all valid indices.
-;; .author Michael Sperber
-(define (u8vector=? u8vector-1 u8vector-2)
-  (let ((size (u8vector-length u8vector-1)))
-    (and (= size (u8vector-length u8vector-2))
-	 (let loop ((i 0))
-	   (or (>= i size)
-	       (and (= (u8vector-ref u8vector-1)
-		       (u8vector-ref u8vector-2))
-		    (loop (+ 1 i))))))))
+;;; TODO: Pending fix for () in FFI functions
+;; (define native-endianness
+;;   (let ((ne (c-lambda () bool "
+;; 	#ifdef ___BIG_ENDIAN 
+;; 	   ___result=1; 
+;; 	#else 
+;; 	   ___result=0; 
+;; 	#endif")))
+;;     (lambda () (if (ne) 'big 'little))))
 
 ;;! Compares u8vector-1 and u8vector-2 and returns a value consistent with the
 ;; vector ordering specified in SRFI 67, i.e. -1 if u8vector-1 is smaller than
@@ -73,6 +74,19 @@
                     ((> elt-1 elt-2)  1)
                     (else (loop (+ i 1)))))))))))
 
+;;! Returns #t if u8vector-1 and u8vector-2 are equal---that is, if they
+;; have the same length and equal elements at all valid indices.
+;; .author Michael Sperber
+;; (define (u8vector=? u8vector-1 u8vector-2)
+;;   (let ((size (u8vector-length u8vector-1)))
+;;     (and (= size (u8vector-length u8vector-2))
+;; 	 (let loop ((i 0))
+;; 	   (or (>= i size)
+;; 	       (and (= (u8vector-ref u8vector-1)
+;; 		       (u8vector-ref u8vector-2))
+;; 		    (loop (+ 1 i))))))))
+;; .author Arthur T Smyles
+(define (u8vector=? u8vector-1 u8vector-2) (= (u8vector-compare u8vector-1 u8vector-2) 0))
 
 ;; U8vector manipulation / handling
 ;; Author: Marc Feeley 

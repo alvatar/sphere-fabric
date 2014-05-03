@@ -21,7 +21,8 @@
   (include
    (= structure/stream-macros))
   (load
-   (= structure/stream)))
+   (= structure/stream)
+   (= algorithm/list)))
  (algorithm/stream-extra
   (include
    (= structure/stream-macros))
@@ -44,6 +45,9 @@
  (structure/stream
   (load
    (= algorithm/list)))
+ (structure/srfi-69-table
+  (load
+   (core: assert)))
  (structure/multi-dimensional-array
   (load
    (= algorithm/list))))

@@ -18,7 +18,7 @@
 (define-task compile ()
   (sake#parallel-for-each
    (lambda (m)
-     ;;(sake#compile-module m cond-expand-features: '(debug) version: '(debug))
+     (sake#compile-module m cond-expand-features: '(debug) version: '(debug))
      (sake#compile-module m cond-expand-features: '(optimize)))
    modules))
 

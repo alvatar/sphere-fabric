@@ -26,9 +26,9 @@
 ;; Important Notice: the test is incomplete. See SRFI for the complete test
 ;;
 
-(##import energy: testing)
-(##import algorithm/comprehension)
-(##import algorithm/compare)
+(##spheres-load energy: testing)
+(##spheres-load algorithm/comprehension)
+(##spheres-load algorithm/compare)
 
 (test-begin "SRFI-67: Compare Procedures")
 

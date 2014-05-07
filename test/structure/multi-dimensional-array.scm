@@ -1,5 +1,5 @@
-(##import energy: testing)
-(##import structure/multi-dimensional-array)
+(##spheres-load energy: testing)
+(##spheres-load structure/multi-dimensional-array)
 
 (test-begin "SRFI-25: Multi-dimensional-arrays" 169)
 
@@ -16,7 +16,7 @@
 	   (array? (shape -1 0))
 	   (array? (shape -1 1))
 	   (array? (shape 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8))))
-
+ 
 (test-equal "make-array" #t
       (and (array? (make-array (shape)))
 	   (array? (make-array (shape) *))
@@ -429,6 +429,6 @@
 (test-equal 'p
 	    (array-ref
 	     (share-array four-dee-array (shape 1 2) (make-simple-affine 4 1))
-	     1))
+ 	     1))
 
 (test-end)

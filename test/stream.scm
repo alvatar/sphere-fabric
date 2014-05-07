@@ -2,9 +2,9 @@
 ;; Do not remove previous line (used for tests)
 ;; Based on code by Kon Lovett, 2009
 
-(##import energy: testing)
-(##import algorithm/stream)
-(##import algorithm/stream-extra)
+(##spheres-load energy: testing)
+(##spheres-load algorithm/stream)
+(##spheres-load algorithm/stream-extra)
 
 (test-begin "SRFI-41: Streams" 239)
 

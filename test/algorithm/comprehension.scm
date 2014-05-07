@@ -1,7 +1,7 @@
 ;; Based on reference implementation by sebastian.egner@philips.com
 
-(##import energy: testing)
-(##import algorithm/comprehension)
+(##spheres-load energy: testing)
+(##spheres-load algorithm/comprehension)
 
 (test-begin "SRFI-42: Eager comprehensions" 157)
 
@@ -10,17 +10,16 @@
 ; ==========================================================================
 
 (test-equal 
-  (let ((x 0)) (do-ec (set! x (+ x 1))) x) 
+  (let ((x 0)) (do-ec (set! x (+ x 1))) x)
   1)
 
 (test-equal 
-  (let ((x 0)) (do-ec (:range i 10) (set! x (+ x 1))) x) 
+  (let ((x 0)) (do-ec (:range i 10) (set! x (+ x 1))) x)
   10)
 
 (test-equal 
-  (let ((x 0)) (do-ec (:range n 10) (:range k n) (set! x (+ x 1))) x) 
+  (let ((x 0)) (do-ec (:range n 10) (:range k n) (set! x (+ x 1))) x)
   45)
-
 
 ; ==========================================================================
 ; list-ec and basic qualifiers 

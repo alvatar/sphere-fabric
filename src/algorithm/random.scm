@@ -69,7 +69,7 @@
 (define random-sample-ordered
   (match-lambda*
    ((size (? list? input))
-    (ordered-random-sample size (list->stream input)))
+    (random-sample-ordered size (list->stream input)))
    ((size (? stream? input))
     (let* ((enumerated-input (stream-zip input (stream-from 0)))
            (results (random-sample size enumerated-input)))

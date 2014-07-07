@@ -534,6 +534,24 @@
       (f (cdr x:xs) (cons (car x:xs) result)))))
   (f x:xs '()))
 
+;;! Flatten only forms with a specific head used as tag
+;; Example:
+;; (flatten-tag '##begin '(##begin 1 2 3 (##begin 4 5 6) (7) (##begin 8 (9))))
+;; => (1 2 3 4 5 6 (7) 8 (9))
+(define (flatten-tag tag lst)
+  (let recur ((lst (if (and (not (null? lst)) (eq? (car lst) tag))
+                       (cdr lst)
+                       lst)))
+    (cond
+     ((null? lst)
+      '())
+     ((and (pair? (car lst)) (eq? tag (caar lst)))
+      (append (recur (cdar lst)) (recur (cdr lst))))
+     ((pair? (car lst))
+      (cons (recur (car lst)) (recur (cdr lst))))
+     (else
+      (cons (car lst) (recur (cdr lst)))))))
+
 ;;! Make a structure analysis of a list
 (define (list->skeleton l)
   ((letrec ((S (lambda (l n)

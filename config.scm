@@ -45,7 +45,7 @@
  (structure/stream
   (load
    (= algorithm/list)))
- (structure/srfi-69-table
+ (structure/hash-table
   (load
    (core: assert)))
  (structure/multi-dimensional-array

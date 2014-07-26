@@ -11,8 +11,8 @@
     algorithm/u8vector
     algorithm/vector
     structure/array
+    structure/hash-table
     structure/multi-dimensional-array
-    structure/srfi-69-table
     structure/stream))
 
 (define-task compile ()

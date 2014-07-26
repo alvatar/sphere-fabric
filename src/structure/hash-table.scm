@@ -1,8 +1,10 @@
 ;;!!! SRFI-69: Basic hash tables
 ;; .author Arthur T Smyles. Implemented based on Gambit's tables
+;; .author Álvaro Castro-Castilla, 2014 - Ported to SchemeSpheres
 ;;
 ;; This SRFI is provided for supporting modules that require this API.
-;;; TODO: Currently it doesn't work due to usage of low-level Gambit macros
+;; Implementation is based upon Gambit's tables, which are more powerful. They are
+;; actually the same type, thus being compatible.
 
 (cond-expand
  (optimize
@@ -10,6 +12,106 @@
  (debug
   (declare (safe) (debug) (debug-location) (debug-source) (debug-environments)))
  (else (void)))
+
+;;;;;;;;;;;;;;;
+
+;; XXX: This is the proper way of declaring Gambit's tables
+;; (define-type table
+;;   id: 5917e472-85e5-11d9-a2c0-00039301ba52
+;;   type-exhibitor: macro-type-table
+;;   constructor: macro-make-table
+;;   implementer: implement-type-table
+;;   opaque:
+;;   macros:
+;;   prefix: macro-
+;;   (flags unprintable:)
+;;   (test  unprintable:)
+;;   (hash  unprintable:)
+;;   (loads unprintable:)
+;;   (gcht  unprintable:)
+;;   (init  unprintable:))
+
+;; Minimal hash table declaration, since define-type is still problematic in 
+
+(define ##table-type (##structure-type (make-table)))
+(define-macro (macro-table-flags obj)
+  (##list '(let () (##declare (extended-bindings)) ##direct-structure-ref)
+          obj
+          1
+          '##table-type
+          #f))
+(define-macro (macro-table-flags-set! obj val)
+  (##list '(let () (##declare (extended-bindings)) ##direct-structure-set!)
+          obj
+          val
+          1
+          '##table-type
+          #f))
+(define-macro (macro-table-gcht-set! obj val)
+  (##list '(let () (##declare (extended-bindings)) ##direct-structure-set!)
+          obj
+          val
+          5
+          '##table-type
+          #f))
+(define-macro (macro-table-hash obj)
+  (##list '(let () (##declare (extended-bindings)) ##direct-structure-ref)
+          obj
+          3
+          '##table-type
+          #f))
+(define-macro (macro-table-test obj)
+  (##list '(let () (##declare (extended-bindings)) ##direct-structure-ref)
+          obj
+          2
+          '##table-type
+          #f))
+
+;;;;
+
+(define-macro (macro-slot index struct . val)
+  (if (null? val)
+      `(##vector-ref ,struct ,index)
+      `(##vector-set! ,struct ,index ,@val)))
+
+(define-macro (macro-gc-hash-table-flags ht)
+  `(macro-slot 1 ,ht))
+(define-macro (macro-gc-hash-table-flags-set! ht x)
+  `(macro-slot 1 ,ht ,x))
+(define-macro (macro-gc-hash-table-count ht)
+  `(macro-slot 2 ,ht))
+(define-macro (macro-gc-hash-table-count-set! ht x)
+  `(macro-slot 2 ,ht ,x))
+(define-macro (macro-gc-hash-table-min-count ht)
+  `(macro-slot 3 ,ht))
+(define-macro (macro-gc-hash-table-min-count-set! ht x)
+  `(macro-slot 3 ,ht ,x))
+(define-macro (macro-gc-hash-table-free ht)
+  `(macro-slot 4 ,ht))
+(define-macro (macro-gc-hash-table-free-set! ht x)
+  `(macro-slot 4 ,ht ,x))
+
+(define-macro (macro-gc-hash-table-key0) 5)
+(define-macro (macro-gc-hash-table-val0) 6)
+
+(define-macro (macro-gc-hash-table-flag-weak-keys) 1)
+(define-macro (macro-gc-hash-table-flag-weak-vals) 2)
+(define-macro (macro-gc-hash-table-flag-key-moved) 4)
+(define-macro (macro-gc-hash-table-flag-entry-deleted) 8)
+(define-macro (macro-gc-hash-table-flag-mem-alloc-keys) 16)
+(define-macro (macro-gc-hash-table-flag-need-rehash) 32)
+
+(define-macro (macro-gc-hash-table-key-ref ht i*2)
+  `(##vector-ref ,ht (##fx+ ,i*2 (macro-gc-hash-table-key0))))
+(define-macro (macro-gc-hash-table-key-set! ht i*2 x)
+  `(##vector-set! ,ht (##fx+ ,i*2 (macro-gc-hash-table-key0)) ,x))
+
+(define-macro (macro-gc-hash-table-val-ref ht i*2)
+  `(##vector-ref ,ht (##fx+ ,i*2 (macro-gc-hash-table-val0))))
+(define-macro (macro-gc-hash-table-val-set! ht i*2 x)
+  `(##vector-set! ,ht (##fx+ ,i*2 (macro-gc-hash-table-val0)) ,x))
+
+;;-------------------------------------------------------------------------------
 
 ;;!! Constructors
 (define hash-table-type (##structure-type (make-table)))
